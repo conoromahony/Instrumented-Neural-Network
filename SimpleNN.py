@@ -29,6 +29,11 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import time
+
+# Open a file for writing the neural network working data.
+filename = "Working-" + time.strftime("%Y%m%d-%H%M")
+file = open(filename, "w")
 
 
 # Create the initial weights and biases for the neural network.
@@ -70,12 +75,16 @@ def softmax(Z):
 def forward_prop(W1, b1, W2, b2, X):
     # Calculate the node values for layer 1 (the hiden layer). Remember W1 is a numpy array, so we can use .dot for matrix operations.
     Z1 = W1.dot(X) + b1
+    file.write(Z1)
     # Apply the activation function. We are using the Rectified Linear Unit (ReLU) function.
     A1 = ReLU(Z1)
+    file.write(A1)
     # Calculate the node values for layer 2 (the output layer).
     Z2 = W2.dot(A1) + b2
+    file.write(Z2)
     # Apply the softmax function. The softmax function turns the output values into probabilities.
     A2 = softmax(Z2)
+    file.write(A2)
     return Z1, A1, Z2, A2
 
 
@@ -228,4 +237,7 @@ test_prediction(3, W1, b1, W2, b2)
 dev_predictions = make_predictions(X_dev, W1, b1, W2, b2)
 validation_accuracy = get_accuracy(dev_predictions, Y_dev)
 print(validation_accuracy)
+
+# Close the file that contains all the neural network working data.
+file.close()
 
