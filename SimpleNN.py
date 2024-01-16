@@ -75,16 +75,16 @@ def softmax(Z):
 def forward_prop(W1, b1, W2, b2, X):
     # Calculate the node values for layer 1 (the hiden layer). Remember W1 is a numpy array, so we can use .dot for matrix operations.
     Z1 = W1.dot(X) + b1
-    file.write(Z1)
+    file.write(np.array_str(Z1))
     # Apply the activation function. We are using the Rectified Linear Unit (ReLU) function.
     A1 = ReLU(Z1)
-    file.write(A1)
+    file.write(np.array_str(A1))
     # Calculate the node values for layer 2 (the output layer).
     Z2 = W2.dot(A1) + b2
-    file.write(Z2)
+    file.write(np.array_str(Z2))
     # Apply the softmax function. The softmax function turns the output values into probabilities.
     A2 = softmax(Z2)
-    file.write(A2)
+    file.write(np.array_str(A2))
     return Z1, A1, Z2, A2
 
 
