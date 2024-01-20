@@ -13,7 +13,7 @@
 
 # To run:
 #  - Go to Desktop > Programming > Instrumented-Neural-Network
-#  - Type "python SimpleNN.py"
+#  - Type "python Simple-Neural-Nework.py"
 # 
 # To commit changes:
 #  - Edit with Visual Studio
@@ -275,3 +275,8 @@ print(validation_accuracy)
 
 # Close the file that contains all the neural network working data.
 #file.close()
+
+# Need to write the JSON data.
+# Following instructiuons in: https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
+# Taking inspiration from: https://d3-graph-gallery.com/network.html
+# Sample JSON file: https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_network.json

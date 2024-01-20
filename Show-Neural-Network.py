@@ -1,10 +1,22 @@
+# This code uses flask to create a web page that shows the operation of a neural network (that was created using 
+# Simple-Neural-Network.py). It displays the entire neural network, while allowing you to zoom in on certain 
+# neurons. It uses D3 to display the network graph.
+# 
+# Source 1: https://gist.github.com/e9t/6073cd95c2a515a9f0ba
+# Source 2: https://codepen.io/Neo24/pen/GRRdBWr
+
 # To run:
 #  - Go to Desktop > Programming > Instrumented-Neural-Network
 #  - Type "flask run"
+#  - To view, load the following page in a browser: http://127.0.0.1:5000/
+# 
 # To commit changes:
 #  - Edit with Visual Studio
 #  - git commit -m "message"
 #  - git push
+
+# TODO:
+#  - Combine this file with the file that creates and runs the neural network (i.e. Simple-Neural-Network.py). 
 
 from flask import Flask, render_template, make_response
 import numpy as np
@@ -34,21 +46,3 @@ def hello():
         output_str += new_str
     output_str += "newGraph.nodes = newGraph.nodes.concat(newInputLayer, newHiddenLayer, newOutputLayer);"
     return render_template("index.html", network_graph=output_str)
-
-# Using flask. To run, simply enter "python Interpret.py" and then view http://127.0.0.1:5000/
-# Creating a webpage that has the weights between the nodes on Layer 0 and the nodes on Layer 1
-# That's it. No other weights. No biases. 
-# And I'm only doing it for the first iteration (i.e. before we have even trained any data).
-# Next up... do a better job of displaying this data (i.e. these weights).
-# Find some visual way to present it.
-# Maybe have two areas of screen: the left side shows entire structure; the right side shows close up of one node.
-# Then let's figure out how to do it for all of the iterations. (Perhaps via a drop-down list of iterations.)
-
-# Source 1: https://gist.github.com/e9t/6073cd95c2a515a9f0ba
-# Source 2: https://codepen.io/Neo24/pen/GRRdBWr
-    
-
-# Make sure to include D3:
-#   <script src="https://d3js.org/d3.v7.min.js"></script>
-# D3 supports different types of data like arrays, CSV, XML, TSV, JSON, and so on.
-# This data can come from a local file in your working directory
