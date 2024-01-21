@@ -7,6 +7,7 @@
 
 # To run:
 #  - Go to Desktop > Programming > Instrumented-Neural-Network
+#  - Type "export FLASK_APP=Show-Neural-Network.py"
 #  - Type "flask run"
 #  - To view, load the following page in a browser: http://127.0.0.1:5000/
 # 
@@ -21,8 +22,8 @@
 from flask import Flask, render_template, make_response
 import numpy as np
 
-directory_name = "Neural-Network-Parameters-20240117-1441/"
-file_name = "W1-0.npy"
+directory_name = "Neural-Network-Parameters-20240121-1326/"
+file_name = "working-data-0"
 
 nodes_in_layer_0 = 784
 nodes_in_layer_1 = 64
@@ -46,3 +47,8 @@ def hello():
         output_str += new_str
     output_str += "newGraph.nodes = newGraph.nodes.concat(newInputLayer, newHiddenLayer, newOutputLayer);"
     return render_template("index.html", network_graph=output_str)
+
+
+# Just getting started pulling in serialized data.
+# Of course, will need to unserialize it.
+# Will also need to wor with the new format.

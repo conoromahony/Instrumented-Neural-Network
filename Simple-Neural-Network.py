@@ -21,7 +21,10 @@
 #  - git push
 
 # TODO:
+#  - See if there's a way to add X, Z1, A1, Z2, and A2 to the serialized working data.
+#  - Add the back propagation data to the serialized working data.
 #  - Refactor the code so the number of layers is not hardcoded.
+#  - See if it makes sense to serialize the matrices directly, and shift the processing of them to the Javascript code
 #  - Add other activation functions.
 #  - Consider variations of gradient descent that improve training efficiency: gradient descent with momentum, RMSProp, and Adam optimization. 
 #  - Create a package for the refactored neural network code.
@@ -33,41 +36,21 @@ import time
 import os
 import json
 
+
+num_input_nodes = 784
+num_hidden_layers = 1
+num_hidden_nodes = 64
+num_output_nodes = 10
+num_iterations = 10
+activation_fn = "Rectified Linear Unit (ReLU)"
+alpha_value = 0.1
+loss_fn = "Subtract a one hot encoding of the label from the probabilities"
+
+
 # Create a directory for writing the neural network working data.
 # In the directory, ther will be one JSON file for each iteration though the neural network. 
 directory_name = "Neural-Network-Parameters-" + time.strftime("%Y%m%d-%H%M")
 os.makedirs(directory_name)
-
-# Create the data structures for storing the details of the neural network working data.
-working_data = {}
-meta_data = []
-neurons_data = []
-connections_data = []
-
-# We will store the following working data in JSON format...
-#
-# Metadata:
-#  - Number of hidden layers
-#  - Number of nodes in each layer
-#  - Iteration
-#  - Direction (i.e. forward or backward)
-#  - Activation function (i.e. descriptive text)
-#  - Alpha
-#  - Prediction
-#  - Label (i.e. the actual value)
-#  - Loss function (i.e. descriptive text)
-#
-# Neurons:
-#  - Layer #
-#  - Node #
-#  - Bias (db if backward step)
-#  - Z (0 if input layer; 0 if backward step)
-#  - Value (Input value if input layer; A if other layers; 0 if backward step)
-# 
-# Connections:
-#  - Source neuron node #
-#  - Target neuron node #
-#  - Weight (dW if backward step)
 
 
 # Create the initial weights and biases for the neural network.
@@ -76,13 +59,13 @@ connections_data = []
 def init_params():
     # Defines the weights for the conections to the nodes in layer 1. W1 is a 64 x 784 matrix with random values.
     # We subtract 0.5 from the random values so we end up with numbers between -0.5 and 0.5 (rather than 0 and 1),
-    W1 = np.random.rand(64, 784) - 0.5
+    W1 = np.random.rand(num_hidden_nodes, num_input_nodes) - 0.5
     # Defines the biases for the nodes in layer 1. b1 is a 64 x 1 matrix with random values.
-    b1 = np.random.rand(64, 1) - 0.5
+    b1 = np.random.rand(num_hidden_nodes, 1) - 0.5
     # Defines the weights for the conections to the nodes in layer 2. W2 is a 10 x 64 matrix with random values.
-    W2 = np.random.rand(10, 64) - 0.5
+    W2 = np.random.rand(num_output_nodes, num_hidden_nodes) - 0.5
     # Defines the biases for the nodes in layer 2. W1 is a 10 x 1 matrix with random values.
-    b2 = np.random.rand(10, 1) - 0.5
+    b2 = np.random.rand(num_output_nodes, 1) - 0.5
     return W1, b1, W2, b2
 
 
@@ -108,10 +91,12 @@ def softmax(Z):
 #   𝐴[2] = 𝑔softmax(𝑍[2])
 def forward_prop(W1, b1, W2, b2, X):
     # Calculate the node values for layer 1 (the hiden layer). Remember W1 is a numpy array, so we can use .dot for matrix operations.
+    # W1 is a 64x784 matrix. X is a 784x41000 matrix. Their dot product is a 64x41000 matrix. Therefore, Z1 is a 64x41000 matrix.
     Z1 = W1.dot(X) + b1
     # Apply the activation function. We are using the Rectified Linear Unit (ReLU) function.
     A1 = ReLU(Z1)
     # Calculate the node values for layer 2 (the output layer).
+    # W2 is a 10x64 matrix. A1 is a 64x41000 matrix. Their dot product is a 10x41000 matrix. Therefore, Z2 is a 10x41000 matrix.
     Z2 = W2.dot(A1) + b2
     # Apply the softmax function. The softmax function turns the output values into probabilities.
     A2 = softmax(Z2)
@@ -185,7 +170,7 @@ def get_predictions(A2):
 
 # Get the accuracy between the predictions (i.e. A2) and Y (i.e. the labels).
 def get_accuracy(predictions, Y):
-    print(predictions, Y)
+    #print(predictions, Y)
     return np.sum(predictions == Y) / Y.size
 
 
@@ -193,14 +178,114 @@ def get_accuracy(predictions, Y):
 # It does this iteration times, and it prints out an update every 10 iterations.
 def gradient_descent(X, Y, alpha, iterations):
     W1, b1, W2, b2 = init_params()
-    for i in range(iterations):
-        # This ensures numpy doesn't truncate values when printing out the arrays.
-        # with np.printoptions(threshold=np.inf):
-        #    file.write(np.array_str(W1))
-        file_name =  directory_name + "/W1-" + str(i)
-        np.save(file_name, W1)
+    for i in range(iterations):        
+        # Create the data structures for storing the details of the neural network working data.
+        # For each iteration, we will have one working data file. The name of the file will indicate the iteration.
+        # The working_data dictionary will have three lists: meta_data, node_data, and connections_data.
+        #
+        # Metadata:
+        #  - Number of hidden layers
+        #  - Number of nodes in each layer
+        #  - Number of iterations
+        #  - Iteration
+        #  - Direction (i.e. forward or backward)
+        #  - Activation function (i.e. descriptive text)
+        #  - Alpha
+        #  - Prediction
+        #  - Label (i.e. the actual value)
+        #  - Loss function (i.e. descriptive text)
+        #
+        # Neurons:
+        #  - Layer #
+        #  - Node #
+        #  - ID # (which is used for creating the links)
+        #  - Bias (db if backward step)
+        # 
+        # Connections:
+        #  - Source neuron node #
+        #  - Target neuron node #
+        #  - Weight (dW if backward step)
+        #
+        # Note: I don't see a practcal way to include the X (training data), Z1, A1, Z2, or A2 values. During each iteration, we process
+        # 41,000 images. That means X is a 784x41000 matrix. In other words, during each iteration, we process 41,000 values through each
+        # node in the network. This also means 41,000 values of Z1, A1, Z2, and A2 for each iteration. I'm not sure how to gracefully show
+        # this. For now, I will not include this information in the JSON. Maybe she can show this informatn for the "inference" phase, rather
+        # than the training phase.
+
+        working_data = {}
+        meta_data = []
+        nodes_data = []
+        connections_data = []
+
+        # Creating the data structure that stores the meta data for the working data
+        temp_metadata = {}
+        temp_metadata["num_input_nodes"] = num_input_nodes
+        temp_metadata["num_hidden_layers"] = num_hidden_layers
+        temp_metadata["num_hidden_nodes"] = num_hidden_nodes
+        temp_metadata["num_output_nodes"] = num_output_nodes
+        temp_metadata["num_iterations"] = num_iterations
+        temp_metadata["iteration_number"] = i
+        temp_metadata["direction"] = "forward"
+        temp_metadata["activation_fn"] = activation_fn
+        temp_metadata["alpha_value"] = alpha_value
+        temp_metadata["prediction"] = ""
+        temp_metadata["actual_value"] = ""
+        temp_metadata["loss_fn"] = loss_fn
+        meta_data.append(temp_metadata)
+
+        # Creating the data structure that stores the working data for the connections between nodes in the input layer and the hidden layer
+        for temp_i in range(1, num_input_nodes):
+            for temp_j in range(1, num_hidden_nodes):
+                temp_connection = {}
+                temp_connection["source"] = 10000 + temp_i       # To make the node IDs unique I am adding a number indicating the layer
+                temp_connection["target"] = 20000 + temp_j       # To make the node IDs unique I am adding a number indicating the layer
+                temp_connection["weight"] = W1[temp_j,temp_i]
+                connections_data.append(temp_connection)
+        # Creating the data structure that stores the working data for the connections between nodes in the hidden layer and the output layer
+        for temp_k in range(1, num_hidden_nodes):
+            for temp_l in range(1, num_output_nodes):
+                temp_connection = {}
+                temp_connection["source"] = 20000 + temp_k       # To make the node IDs unique I am adding a number indicating the layer
+                temp_connection["target"] = 30000 + temp_l       # To make the node IDs unique I am adding a number indicating the layer
+                temp_connection["weight"] = W2[temp_l,temp_k]
+                connections_data.append(temp_connection)
+
+        for temp_m in range(1, num_input_nodes):
+            temp_node = {}
+            temp_node["layer"] = 0
+            temp_node["node"] = temp_m
+            temp_node["id"] = 10000 + temp_m
+            temp_node["bias"] = 0                               # There is no bias for the input nodes
+        for temp_n in range(1, num_hidden_nodes):
+            temp_node = {}
+            temp_node["layer"] = 1
+            temp_node["node"] = temp_n
+            temp_node["id"] = 20000 + temp_n
+            temp_node["bias"] = b1[temp_n]
+        for temp_o in range(1, num_output_nodes):
+            temp_node = {}
+            temp_node["layer"] = 2
+            temp_node["node"] = temp_o
+            temp_node["id"] = 30000 + temp_o
+            temp_node["bias"] = b2[temp_o]
+
+        working_data["metadata"] = meta_data
+        working_data["nodes"] = nodes_data
+        working_data["connections"] = connections_data
+
+        # Serializing the JSON data
+        json_object = json.dumps(working_data, indent=4)
+ 
+        # Writing JSON data to file
+        file_name =  directory_name + "/working-data-" + str(i)
+        with open(file_name, "w") as outfile:
+            outfile.write(json_object)
+
         Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X)
         dW1, db1, dW2, db2 = backward_prop(Z1, A1, Z2, A2, W1, W2, X, Y)
+
+        # TODO: Add the back propagation data to the serialized working data.
+
         W1, b1, W2, b2 = update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, alpha)
         if i % 10 == 0:
             print("Iteration: ", i)
@@ -258,25 +343,23 @@ Y_train = data_train[0]
 X_train = data_train[1:n]
 X_train = X_train / 255.
 
-# Run the neural network for 500 iterations on the training set, with an alpha of 0.1.
-W1, b1, W2, b2 = gradient_descent(X_train, Y_train, 0.10, 10)
-
+# Run the neural network on the training set.
+W1, b1, W2, b2 = gradient_descent(X_train, Y_train, alpha_value, num_iterations)
 
 # Test the neural network's prediction for the images at indexes 0, 1, 2, and 3.
-test_prediction(0, W1, b1, W2, b2)
-test_prediction(1, W1, b1, W2, b2)
-test_prediction(2, W1, b1, W2, b2)
-test_prediction(3, W1, b1, W2, b2)
+#test_prediction(0, W1, b1, W2, b2)
+#test_prediction(1, W1, b1, W2, b2)
+#test_prediction(2, W1, b1, W2, b2)
+#test_prediction(3, W1, b1, W2, b2)
 
 # Let's have a look at the accuracy for the validation set.
 dev_predictions = make_predictions(X_dev, W1, b1, W2, b2)
 validation_accuracy = get_accuracy(dev_predictions, Y_dev)
 print(validation_accuracy)
 
-# Close the file that contains all the neural network working data.
-#file.close()
-
 # Need to write the JSON data.
 # Following instructiuons in: https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
 # Taking inspiration from: https://d3-graph-gallery.com/network.html
 # Sample JSON file: https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_network.json
+# I think I have the writing of the JSON data working, although there are some TODOs above.
+# Time to now focus on creating the network diagram via JavaScript.
