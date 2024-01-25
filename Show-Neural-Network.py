@@ -13,6 +13,7 @@
 # 
 # To commit changes:
 #  - Edit with Visual Studio
+#  - git add *
 #  - git commit -m "message"
 #  - git push
 
@@ -21,34 +22,78 @@
 
 from flask import Flask, render_template, make_response
 import numpy as np
+import json
 
-directory_name = "Neural-Network-Parameters-20240121-1326/"
+
+directory_name = "Neural-Network-Parameters-20240124-1941/"
 file_name = "working-data-0"
+file_object = open(directory_name + file_name)
+working_data = json.load(file_object)
+meta_data = working_data["metadata"]
+nodes_data = working_data["nodes"]
+connections_data = working_data["connections"]
 
-nodes_in_layer_0 = 784
-nodes_in_layer_1 = 64
-nodes_in_layer_2 = 10
 
-weights = np.load(directory_name + file_name)
+# Metadata:
+#  - Number of hidden layers
+#  - Number of nodes in each layer
+#  - Number of iterations
+#  - Iteration
+#  - Direction (i.e. forward or backward)
+#  - Activation function (i.e. descriptive text)
+#  - Alpha
+#  - Prediction
+#  - Label (i.e. the actual value)
+#  - Loss function (i.e. descriptive text)
+num_input_nodes = meta_data[0]["num_input_nodes"]
+num_hidden_layers = meta_data[0]["num_hidden_layers"]
+num_hidden_nodes = meta_data[0]["num_hidden_nodes"]
+num_output_nodes = meta_data[0]["num_output_nodes"]
+num_iterations = meta_data[0]["num_iterations"]
+iteration_number = meta_data[0]["iteration_number"]
+direction = meta_data[0]["direction"]
+activation_fn = meta_data[0]["activation_fn"]
+alpha_value = meta_data[0]["alpha_value"]
+prediction = meta_data[0]["prediction"]
+actual_value = meta_data[0]["actual_value"]
+loss_fn = meta_data[0]["loss_fn"]
+
 
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
+    # Neurons:
+    #  - Layer #
+    #  - Node #
+    #  - ID # (which is used for creating the links)
+    #  - Bias (db if backward step)
     output_str = "var newGraph = { 'nodes': [] }; \nvar newInputLayer = []; \nvar newHiddenLayer = []; var newOutputLayer = []; \n"
-    for i in range(0, nodes_in_layer_0):
+    for i in range(0, num_input_nodes):
         new_str = "var newTempLayer = { 'label': " + str(i) + ", 'layer': 0 }; newInputLayer.push(newTempLayer); \n"
         output_str += new_str
-    for j in range(0, nodes_in_layer_1):
+    for j in range(0, num_hidden_nodes):
         new_str = "var newTempLayer = { 'label': " + str(j) + ", 'layer': 1 }; newHiddenLayer.push(newTempLayer); \n"
         output_str += new_str
-    for k in range(0, nodes_in_layer_2):
+    for k in range(0, num_output_nodes):
         new_str = "var newTempLayer = { 'label': " + str(k) + ", 'layer': 2 }; newOutputLayer.push(newTempLayer); \n"
         output_str += new_str
     output_str += "newGraph.nodes = newGraph.nodes.concat(newInputLayer, newHiddenLayer, newOutputLayer);"
+
+    # Connections:
+    #  - Source neuron node #
+    #  - Target neuron node #
+    #  - Weight (dW if backward step)
     return render_template("index.html", network_graph=output_str)
 
 
+# I could create a Neural Network Health Check of sorts:
+#  - If a weight is close to zero, it essentially represents a connection between two nodes that is rarely, if ever, used.
+#    These connections are rarely, if ever, used. They don't contribute to the networ because the signals don't pass. If a 
+#    network has a lot of such weights, perhaps it is using a sub-optimal configuration. This is something worth exploring
+#    and potentially reporting.
+
 # Just getting started pulling in serialized data.
-# Of course, will need to unserialize it.
-# Will also need to wor with the new format.
+# Have pulled in the metadata.
+# Now ned to get started on the nodes and connections.
+# Current approach is to create JavaScript in this file to render the network graph, and pass that JavaScript to the HTML file.

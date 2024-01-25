@@ -17,6 +17,7 @@
 # 
 # To commit changes:
 #  - Edit with Visual Studio
+#  - git add *
 #  - git commit -m "message"
 #  - git push
 
@@ -256,18 +257,21 @@ def gradient_descent(X, Y, alpha, iterations):
             temp_node["node"] = temp_m
             temp_node["id"] = 10000 + temp_m
             temp_node["bias"] = 0                               # There is no bias for the input nodes
+            nodes_data.append(temp_node)
         for temp_n in range(1, num_hidden_nodes):
             temp_node = {}
             temp_node["layer"] = 1
             temp_node["node"] = temp_n
             temp_node["id"] = 20000 + temp_n
-            temp_node["bias"] = b1[temp_n]
+            temp_node["bias"] = b1[temp_n, 0]
+            nodes_data.append(temp_node)
         for temp_o in range(1, num_output_nodes):
             temp_node = {}
             temp_node["layer"] = 2
             temp_node["node"] = temp_o
             temp_node["id"] = 30000 + temp_o
-            temp_node["bias"] = b2[temp_o]
+            temp_node["bias"] = b2[temp_o, 0]
+            nodes_data.append(temp_node)
 
         working_data["metadata"] = meta_data
         working_data["nodes"] = nodes_data
@@ -334,6 +338,7 @@ data_dev = data[0:1000].T
 Y_dev = data_dev[0]
 # And X_dev will be the image pixels.
 X_dev = data_dev[1:n]
+# The pixel valueas (0-255) are transformed into decimal values (0-1).
 X_dev = X_dev / 255.
 
 # Create the training data from the remaining images. There are something like 41,000 of them.
@@ -341,6 +346,7 @@ X_dev = X_dev / 255.
 data_train = data[1000:m].T
 Y_train = data_train[0]
 X_train = data_train[1:n]
+# The pixel valueas (0-255) are transformed into decimal values (0-1).
 X_train = X_train / 255.
 
 # Run the neural network on the training set.
@@ -358,7 +364,7 @@ validation_accuracy = get_accuracy(dev_predictions, Y_dev)
 print(validation_accuracy)
 
 # Need to write the JSON data.
-# Following instructiuons in: https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
+# Following instructions in: https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/
 # Taking inspiration from: https://d3-graph-gallery.com/network.html
 # Sample JSON file: https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_network.json
 # I think I have the writing of the JSON data working, although there are some TODOs above.
