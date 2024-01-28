@@ -4,6 +4,7 @@
 # 
 # Source 1: https://gist.github.com/e9t/6073cd95c2a515a9f0ba
 # Source 2: https://codepen.io/Neo24/pen/GRRdBWr
+# Looking at: https://d3-graph-gallery.com/graph/network_basic.html
 
 # To run:
 #  - Go to Desktop > Programming > Instrumented-Neural-Network
@@ -18,7 +19,9 @@
 #  - git push
 
 # TODO:
-#  - Combine this file with the file that creates and runs the neural network (i.e. Simple-Neural-Network.py). 
+#  - Combine this file with the file that creates and runs the neural network (i.e. Simple-Neural-Network.py).
+#  - Switch it so we write to a TempFiles directory, and then ovwerwrite the contents of the directory on the next run.
+#  - Is it possible to make this more efficient: read JSON --> create output_str --> create SVG
 
 from flask import Flask, render_template, make_response
 import numpy as np
@@ -88,7 +91,9 @@ def hello():
 #    network has a lot of such weights, perhaps it is using a sub-optimal configuration. This is something worth exploring
 #    and potentially reporting.
 
-# Just getting started pulling in serialized data.
-# Have pulled in the metadata.
-# Now need to get started on the nodes and connections.
-# Current approach is to create JavaScript in this file to render the network graph, and pass that JavaScript to the HTML file.
+# Create three areas on screen:
+#  - Top area for metadata
+#  - Full network on left
+#  - Close up on right
+# Default the close up to node 10001. To see close up for another node, click on the node in the full network.
+# In close up, show five nodes in that layer, plus two node on next layer, and one node on next layer.
