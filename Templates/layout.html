@@ -5,6 +5,12 @@
         <meta charset="utf-8">
         <title>Neural Network Explorer: {% block title %}{% endblock %}</title>
         <script src = "https://d3js.org/d3.v4.min.js"></script>
+        <style>
+            .link {
+                stroke: #999;
+                stroke-opacity: .6;
+            }
+        </style>
     </head>
         
     <body>
@@ -15,39 +21,52 @@
         <script type="text/javascript">
             {% block main %}{% endblock %}
 
+            var graph = newGraph;
+		    var nodes = graph.nodes;
             var nodeSize = 15;
 
             // Draw the nodes
             var svg = d3.select("#networkGraph");
             svg.selectAll("circle")                     
-                .data(newGraph.nodes)                   // Do the following for each item in newGraph.nodes
+                .data(nodes)                            // Do the following for each item in newGraph.nodes
                 .enter()                                // Create a new empty DOM placeholder 
                 .append("circle")                       // Append a "circle" to the empty DOM placeholder
                 .attr("stroke", "black")
                 .attr("fill", "white")
                 .attr("r", nodeSize)
-                .attr("cx", function(d) {               // Set the x coordinate using an anonymous function that accepts the current "data item"
-                    return ((d.layer * 500) + 100);     // Use 500px spacing between layers; use a 100px offset because this coordinate is the center of the circle
+                .attr("cx", function(d) {                       // Set the x coordinate using an anonymous function that accepts the current "data item"
+                    return ((d.layer * 500) + 100);             // Use 500px spacing between layers; use a 100px offset because this coordinate is the center of the circle
                 })
-                .attr("cy", function(d) {               // Set the y coordinate using an anonymous function that accepts the current "data item"
-                    return ((d.label * 40) + 100);      // Use 40px spacing between nodes; use a 100px offset because this coordinate is the center of the circle
+                .attr("cy", function(d) {                       // Set the y coordinate using an anonymous function that accepts the current "data item"
+                    return ((d.node * 40) + 100);               // Use 40px spacing between nodes; use a 100px offset because this coordinate is the center of the circle
                 });
 
             // Add labels for the nodes.    
             svg.selectAll("text")                     
-                .data(newGraph.nodes)
+                .data(nodes)
                 .enter()
                 .append("text")
                 .text(function(d) {               
-                    return d.label;      
+                    return d.bias;      
                 })
                 .attr("x", function(d) {
                     return ((d.layer * 500) + 95);
                 })
                 .attr("y", function(d) {
-                    return ((d.label * 40) + 105);
+                    return ((d.node * 40) + 105);
                 });
 
+		    // Draw the links between nodes.
+		    svg.selectAll(".link")
+		        .data(newGraph.connections)
+		        .enter()
+                .append("line")
+		        .attr("class", "link")
+                .attr("x1", function(d) { return ((nodes.find(n => n.id === d.source)).layer * 500) + 100; })
+		        .attr("y1", function(d) { return ((nodes.find(n => n.id === d.source)).node * 40) + 100; })
+		        .attr("x2", function(d) { return ((nodes.find(n => n.id === d.target)).layer * 500) + 100; })
+		        .attr("y2", function(d) { return ((nodes.find(n => n.id === d.target)).node * 40) + 100; });
+		        //.style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
             // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)
             var  svg_container = document.getElementById("networkGraph");

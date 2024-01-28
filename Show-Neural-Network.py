@@ -68,22 +68,17 @@ def hello():
     #  - Node #
     #  - ID # (which is used for creating the links)
     #  - Bias (db if backward step)
-    output_str = "var newGraph = { 'nodes': [] }; \nvar newInputLayer = []; \nvar newHiddenLayer = []; var newOutputLayer = []; \n"
-    for i in range(0, num_input_nodes):
-        new_str = "var newTempLayer = { 'label': " + str(i) + ", 'layer': 0 }; newInputLayer.push(newTempLayer); \n"
+    output_str = "var newGraph = { 'nodes': [], 'connections':[] }; \n"
+    for node in nodes_data:
+        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
         output_str += new_str
-    for j in range(0, num_hidden_nodes):
-        new_str = "var newTempLayer = { 'label': " + str(j) + ", 'layer': 1 }; newHiddenLayer.push(newTempLayer); \n"
-        output_str += new_str
-    for k in range(0, num_output_nodes):
-        new_str = "var newTempLayer = { 'label': " + str(k) + ", 'layer': 2 }; newOutputLayer.push(newTempLayer); \n"
-        output_str += new_str
-    output_str += "newGraph.nodes = newGraph.nodes.concat(newInputLayer, newHiddenLayer, newOutputLayer);"
-
     # Connections:
     #  - Source neuron node #
     #  - Target neuron node #
     #  - Weight (dW if backward step)
+    for link in connections_data:
+        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
+        output_str += new_str
     return render_template("index.html", network_graph=output_str)
 
 
@@ -95,5 +90,5 @@ def hello():
 
 # Just getting started pulling in serialized data.
 # Have pulled in the metadata.
-# Now ned to get started on the nodes and connections.
+# Now need to get started on the nodes and connections.
 # Current approach is to create JavaScript in this file to render the network graph, and pass that JavaScript to the HTML file.
