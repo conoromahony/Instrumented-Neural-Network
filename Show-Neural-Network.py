@@ -97,3 +97,5 @@ def hello():
 #  - Close up on right
 # Default the close up to node 10001. To see close up for another node, click on the node in the full network.
 # In close up, show five nodes in that layer, plus two node on next layer, and one node on next layer.
+
+# **** NEXT ****: Write the metadata, so we can pass it to the HTML and then pull it into the top area

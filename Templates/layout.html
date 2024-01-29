@@ -10,27 +10,59 @@
                 stroke: #999;
                 stroke-opacity: .6;
             }
+            #neural_nav {
+
+            }
+            #neural_body {
+
+            }
+            #neural_whole {
+
+            } 
+            #neural_zoom {
+
+            }
+            #network_image {
+
+            }
+            #zoom_image {
+
+            }
         </style>
     </head>
         
     <body>
-        <div id="neuralNet" style="margin:50px;">
-            <svg id="networkGraph"></svg>
+        <script type="text/javascript">
+            {% block main %}{% endblock %}
+        </script>
+
+        <div id="neural_nav">
+            <p id="num_input_nodes"></p>
+        </div>
+        <div id="neural_body">
+            <div id="neural_whole" style="margin:50px;">
+                <svg id="network_image"></svg>
+            </div>
+            <div id="neural_zoom">
+                <svg id="zoom_image"></svg>
+            </div>
         </div>
 
         <script type="text/javascript">
-            {% block main %}{% endblock %}
+            //var meta_data = newGraph.metadata;
+            //document.getElementById('num_input_nodes').innerHTML = meta_data.num_input_nodes;
+            //****NEXT****: First add the metadata to what's passed to HTML, then pull it in here
+        </script>
 
-            var graph = newGraph;
-		    var nodes = graph.nodes;
+        <script type="text/javascript">
             var nodeSize = 15;
 
             // Draw the nodes
-            var svg = d3.select("#networkGraph");
+            var svg = d3.select("#network_image");
             svg.selectAll("circle")                     
-                .data(nodes)                            // Do the following for each item in newGraph.nodes
-                .enter()                                // Create a new empty DOM placeholder 
-                .append("circle")                       // Append a "circle" to the empty DOM placeholder
+                .data(newGraph.nodes)                           // Do the following for each item in newGraph.nodes
+                .enter()                                        // Create a new empty DOM placeholder 
+                .append("circle")                               // Append a "circle" to the empty DOM placeholder
                 .attr("stroke", "black")
                 .attr("fill", "white")
                 .attr("r", nodeSize)
@@ -43,7 +75,7 @@
 
             // Add labels for the nodes.    
             svg.selectAll("text")                     
-                .data(nodes)
+                .data(newGraph.nodes)
                 .enter()
                 .append("text")
                 .text(function(d) {               
@@ -62,24 +94,17 @@
 		        .enter()
                 .append("line")
 		        .attr("class", "link")
-                .attr("x1", function(d) { return ((nodes.find(n => n.id === d.source)).layer * 500) + 100; })
-		        .attr("y1", function(d) { return ((nodes.find(n => n.id === d.source)).node * 40) + 100; })
-		        .attr("x2", function(d) { return ((nodes.find(n => n.id === d.target)).layer * 500) + 100; })
-		        .attr("y2", function(d) { return ((nodes.find(n => n.id === d.target)).node * 40) + 100; });
+                .attr("x1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).layer * 500) + 100; })
+		        .attr("y1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).node * 40) + 100; })
+		        .attr("x2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).layer * 500) + 100; })
+		        .attr("y2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).node * 40) + 100; });
 		        //.style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
             // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)
-            var  svg_container = document.getElementById("networkGraph");
+            var  svg_container = document.getElementById("network_image");
             var  bbox = svg_container.getBBox();
             svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
             svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
-
-            // Successful: printing nodes
-            // Successful: labeling nodes
-            // To do: Connect nodes
-            // Looking at: https://d3-graph-gallery.com/graph/network_basic.html
-
-            //console.log("drawing   " + new Date());
         </script>
     </body>
 </html>
