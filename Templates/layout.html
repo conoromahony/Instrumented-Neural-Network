@@ -5,26 +5,148 @@
         <meta charset="utf-8">
         <title>Neural Network Explorer: {% block title %}{% endblock %}</title>
         <script src = "https://d3js.org/d3.v4.min.js"></script>
+        <script type="text/javascript">
+            // JavaScript function that opens a navigation tab.
+            function openTab(evt, tabName) {
+                // Declare all variables
+                var i, tabcontent, tablinks;
+            
+                // Get all elements with class="tabcontent" and hide them
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+            
+                // Get all elements with class="tablinks" and remove the class "active"
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+            
+                // Show the current tab, and add an "active" class to the button that opened the tab
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+            }
+        </script>
+        <script type="text/javascript">
+            // JavaScript function that displays a "close up" of nodes in the network.
+            // It takes one argument nodeID, which is the ID of the node to zoom in on.
+            function openZoom(nodeID) {
+                // Declare all variables
+                var zoomContent;
+                var nodesData = newGraph.nodes.find(currentNode => currentNode.id === parseInt(nodeID));
+            
+                // Select the zoomContent SVG image.
+                zoomContent = document.getElementById("zoom_image");
+                // If it has existing elements, remove them (so we can add new elements).
+                zoomContent.querySelectorAll('*').forEach(element => element.remove());
+            
+                // Add the selected node to the zoomContent SVG image.
+                var zoomNode = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                zoomNode.setAttribute("stroke", "black");
+                zoomNode.setAttribute("fill", "white");
+                zoomNode.setAttribute("r", 200);
+                zoomNode.setAttribute("cx", 400);
+                zoomNode.setAttribute("cy", 300);
+                zoomContent.appendChild(zoomNode)
+
+                // Add information within the node.
+                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
+                nodeInfo.setAttribute("x", 300);
+                nodeInfo.setAttribute("y", 200);
+                nodeInfo.innerHTML = "Node ID:    " + nodesData.id;
+                zoomContent.appendChild(nodeInfo)
+                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
+                nodeInfo.setAttribute("x", 300);
+                nodeInfo.setAttribute("y", 250);
+                nodeInfo.innerHTML = "Layer:    " + nodesData.layer;
+                zoomContent.appendChild(nodeInfo)
+                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
+                nodeInfo.setAttribute("x", 300);
+                nodeInfo.setAttribute("y", 300);
+                nodeInfo.innerHTML = "Node:    " + nodesData.node;
+                zoomContent.appendChild(nodeInfo)
+                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
+                nodeInfo.setAttribute("x", 300);
+                nodeInfo.setAttribute("y", 350);
+                nodeInfo.innerHTML = "Bias:    " + nodesData.bias;
+                zoomContent.appendChild(nodeInfo)
+
+                // NEXT: Get clicking on a node to display that node in the zoom area.
+                // NEXT: Add the inputs and outputs to the displayed node.
+            }
+        </script>
         <style>
+            /* Tabs - Style the tabs */
+            .tab {
+                overflow: hidden;
+                border: 1px solid #ccc;
+                background-color: #f1f1f1;
+            }
+
+            /* Tabs - Style the buttons that are used to open the tab content */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+            }
+
+            /* Tabs - Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Tabs - Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+            /* Tabs - Style the tab content */
+            .tabcontent {
+                display: none;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-top: none;
+            }
+
+            /* Training Tab - Whole Neural Network - Style for connections between nodes */
             .link {
                 stroke: #999;
                 stroke-opacity: .6;
             }
+
+            /* Training Tab - Style for the top area that displays the meta-data */
             #neural_nav {
 
             }
+
+            /* Neural Network - Style for the bottom area that displays the "whole network" and the "close up" */
             #neural_body {
-
+                display: flex; 
             }
+
+            /* Neural Network - Style for the DIV containing the "whole network" */
             #neural_whole {
-
+                background: #b7b7b7;
+                overflow: scroll;
             } 
-            #neural_zoom {
 
+            /* Neural Network - Style for the DIV containing the "close up" */
+            #neural_zoom {
+                flex-grow: 1; 
+                background: #9b9b9b;
             }
+
+            /* Neural Network - Style for the SVG containing the "whole network" */
             #network_image {
 
             }
+
+            /* Neural Network - Style for the SVG containing the "close up" */
             #zoom_image {
 
             }
@@ -36,29 +158,72 @@
             {% block main %}{% endblock %}
         </script>
 
-        <div id="neural_nav">
-            <p id="num_input_nodes"></p>
+        <!-- Tab links -->
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Training')" id="defaultOpen">Training a Neural Network</button>
+            <button class="tablinks" onclick="openTab(event, 'Query')">Querying a Neural Network</button>
+            <button class="tablinks" onclick="openTab(event, 'About')">About this Neural Network</button>
         </div>
-        <div id="neural_body">
-            <div id="neural_whole" style="margin:50px;">
-                <svg id="network_image"></svg>
+
+        <!-- Tab content -->
+        <div id="Training" class="tabcontent">
+            <div id="neural_nav">
+                <p>Iteration <span id="iteration_num"></span> of <span id="num_iterations"></span></p>
+                <p>Direction: <span id="direction"></span></p>
+                <p>Alpha: <span id="alpha_value"></span></p>
+                <p>Activation function: <span id="activation_fn"></span></p>
+                <p>Loss function: <span id="loss_fn"></span></p>
             </div>
-            <div id="neural_zoom">
-                <svg id="zoom_image"></svg>
-            </div>
+            <div id="neural_body">
+                <div id="neural_whole">
+                    <svg id="network_image"></svg>
+                </div>
+                <div id="neural_zoom">
+                    <svg id="zoom_image">Close Up</svg>
+                </div>
+            </div>    
+        </div>
+        
+        <div id="Query" class="tabcontent">
+            <h3>Query</h3>
+        </div>
+        
+        <div id="About" class="tabcontent">
+            <h3>About</h3>
         </div>
 
         <script type="text/javascript">
-            //var meta_data = newGraph.metadata;
-            //document.getElementById('num_input_nodes').innerHTML = meta_data.num_input_nodes;
-            //****NEXT****: First add the metadata to what's passed to HTML, then pull it in here
+            // Get the element with id="defaultOpen" and click on it
+            document.getElementById("defaultOpen").click();
+            // TODO: Make this more robust, by not having to hard code this Node ID.
+            openZoom('10001');
         </script>
 
         <script type="text/javascript">
             var nodeSize = 15;
+            var svg = d3.select("#network_image");
+
+            document.getElementById('iteration_num').innerHTML = iteration_number;
+            document.getElementById('num_iterations').innerHTML = num_iterations;
+            document.getElementById('direction').innerHTML = direction;
+            document.getElementById('alpha_value').innerHTML = alpha_value;
+            document.getElementById('activation_fn').innerHTML = activation_fn;
+            document.getElementById('loss_fn').innerHTML = loss_fn;
+
+            // Draw the links between nodes.  I'm adding the connections first, because I want the nodes to be 
+            // written later so they sit on top of the connections. Otherwise, the connection lines obscure the nodes.
+		    svg.selectAll(".link")
+		        .data(newGraph.connections)
+		        .enter()
+                .append("line")
+		        .attr("class", "link")
+                .attr("x1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).layer * 500) + 100; })
+		        .attr("y1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).node * 40) + 100; })
+		        .attr("x2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).layer * 500) + 100; })
+		        .attr("y2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).node * 40) + 100; });
+		        //.style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
             // Draw the nodes
-            var svg = d3.select("#network_image");
             svg.selectAll("circle")                     
                 .data(newGraph.nodes)                           // Do the following for each item in newGraph.nodes
                 .enter()                                        // Create a new empty DOM placeholder 
@@ -88,23 +253,18 @@
                     return ((d.node * 40) + 105);
                 });
 
-		    // Draw the links between nodes.
-		    svg.selectAll(".link")
-		        .data(newGraph.connections)
-		        .enter()
-                .append("line")
-		        .attr("class", "link")
-                .attr("x1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).layer * 500) + 100; })
-		        .attr("y1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).node * 40) + 100; })
-		        .attr("x2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).layer * 500) + 100; })
-		        .attr("y2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).node * 40) + 100; });
-		        //.style("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-            // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)
+		    // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)
             var  svg_container = document.getElementById("network_image");
             var  bbox = svg_container.getBBox();
             svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
             svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
+
+            // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)
+            var  svg_container = document.getElementById("zoom_image");
+            var  bbox = svg_container.getBBox();
+            svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
+            svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
+
         </script>
     </body>
 </html>

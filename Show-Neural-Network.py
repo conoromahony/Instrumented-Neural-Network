@@ -66,30 +66,31 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    # Neurons:
+    # Metadata...
+    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
+    for item in working_data["metadata"][0].keys():
+        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
+        output_str += new_str
+
+    # Nodes:
+    #  - Node ID (which is used for creating the links)
     #  - Layer #
     #  - Node #
-    #  - ID # (which is used for creating the links)
     #  - Bias (db if backward step)
-    output_str = "var newGraph = { 'nodes': [], 'connections':[] }; \n"
     for node in nodes_data:
         new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
         output_str += new_str
+
     # Connections:
-    #  - Source neuron node #
-    #  - Target neuron node #
+    #  - Source node #
+    #  - Target node #
     #  - Weight (dW if backward step)
     for link in connections_data:
         new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
         output_str += new_str
+
     return render_template("index.html", network_graph=output_str)
 
-
-# I could create a Neural Network Health Check of sorts:
-#  - If a weight is close to zero, it essentially represents a connection between two nodes that is rarely, if ever, used.
-#    These connections are rarely, if ever, used. They don't contribute to the networ because the signals don't pass. If a 
-#    network has a lot of such weights, perhaps it is using a sub-optimal configuration. This is something worth exploring
-#    and potentially reporting.
 
 # Create three areas on screen:
 #  - Top area for metadata
@@ -98,4 +99,5 @@ def hello():
 # Default the close up to node 10001. To see close up for another node, click on the node in the full network.
 # In close up, show five nodes in that layer, plus two node on next layer, and one node on next layer.
 
-# **** NEXT ****: Write the metadata, so we can pass it to the HTML and then pull it into the top area
+# *** I'm in layout.html, working on the function that displays a "close up" of a node in the network.
+# *** After that, I need to make the circles in the larger network clickable.
