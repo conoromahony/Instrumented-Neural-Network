@@ -32,48 +32,66 @@
             // JavaScript function that displays a "close up" of nodes in the network.
             // It takes one argument nodeID, which is the ID of the node to zoom in on.
             function openZoom(nodeID) {
-                // Declare all variables
-                var zoomContent;
-                var nodesData = newGraph.nodes.find(currentNode => currentNode.id === parseInt(nodeID));
+                // Declare all variables. Note that I'm using "const" for variables that don't need reassignment.
+                const zoomContent = document.getElementById("zoom_image");
+                const nodesData = newGraph.nodes.find(currentNode => currentNode.id === parseInt(nodeID));
             
-                // Select the zoomContent SVG image.
-                zoomContent = document.getElementById("zoom_image");
                 // If it has existing elements, remove them (so we can add new elements).
                 zoomContent.querySelectorAll('*').forEach(element => element.remove());
             
-                // Add the selected node to the zoomContent SVG image.
-                var zoomNode = document.createElementNS('http://www.w3.org/2000/svg','circle');
-                zoomNode.setAttribute("stroke", "black");
-                zoomNode.setAttribute("fill", "white");
-                zoomNode.setAttribute("r", 200);
-                zoomNode.setAttribute("cx", 400);
-                zoomNode.setAttribute("cy", 300);
+                // Add a circle for the selected node to the zoomContent SVG image.
+                const zoomNode = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                zoomNode.setAttributeNS(null, "stroke", "black");
+                zoomNode.setAttributeNS(null, "fill", "white");
+                zoomNode.setAttributeNS(null, "r", 200);
+                zoomNode.setAttributeNS(null, "cx", 500);
+                zoomNode.setAttributeNS(null, "cy", 400);
                 zoomContent.appendChild(zoomNode)
 
-                // Add information within the node.
-                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
-                nodeInfo.setAttribute("x", 300);
-                nodeInfo.setAttribute("y", 200);
-                nodeInfo.innerHTML = "Node ID:    " + nodesData.id;
-                zoomContent.appendChild(nodeInfo)
-                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
-                nodeInfo.setAttribute("x", 300);
-                nodeInfo.setAttribute("y", 250);
-                nodeInfo.innerHTML = "Layer:    " + nodesData.layer;
-                zoomContent.appendChild(nodeInfo)
-                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
-                nodeInfo.setAttribute("x", 300);
-                nodeInfo.setAttribute("y", 300);
-                nodeInfo.innerHTML = "Node:    " + nodesData.node;
-                zoomContent.appendChild(nodeInfo)
-                var nodeInfo = document.createElementNS('http://www.w3.org/2000/svg','text');
-                nodeInfo.setAttribute("x", 300);
-                nodeInfo.setAttribute("y", 350);
-                nodeInfo.innerHTML = "Bias:    " + nodesData.bias;
-                zoomContent.appendChild(nodeInfo)
+                // This function creates a text element (that contain the node information) in the circle.
+                // We call this function below.
+                const nodeInfo = (x, y, text) => {
+                    const nodeText = document.createElementNS('http://www.w3.org/2000/svg','text');
+                    nodeText.setAttributeNS(null, "x", x);
+                    nodeText.setAttributeNS(null, "y", y);
+                    nodeText.innerHTML = text;
+                    zoomContent.appendChild(nodeText);
+                };
 
-                // NEXT: Get clicking on a node to display that node in the zoom area.
-                // NEXT: Add the inputs and outputs to the displayed node.
+                // Add text elements that show information about the node.
+                // Note that I'm using the backtick character (`) to indicate template literals, where something 
+                // like "${name}" within the backticks is a placeholder that gets replaced with the value of the 
+                // variable "name" when the string is evaluated.
+                nodeInfo(400, 350, `Node ID:`);
+                nodeInfo(500, 350, `${nodesData.id}`);
+                nodeInfo(400, 400, `Layer:`);
+                nodeInfo(500, 400, `${nodesData.layer}`);
+                nodeInfo(400, 450, `Node:`);
+                nodeInfo(500, 450, `${nodesData.node}`);
+                nodeInfo(400, 500, `Bias:`);
+                nodeInfo(500, 500, `${nodesData.bias}`);
+
+                // Note that I'm hardcoding the fact that there's one input, one hidden, and one output layer.
+                // TODO: Change this to accommodate different network architectures.
+                if (nodesData.layer == 0) {
+                    var y_counter = 0;
+                    newGraph.connections.forEach(function (arrayItem) {
+                        if (arrayItem.source == nodeID) {
+                            y_counter = y_counter + 40;
+                            nodeInfo(900, y_counter, `${arrayItem.weight}`);
+                        }
+                    })
+                    // *** HERE *** I'm outputting the weights of the connections coming into and going out of the zoomed in node.
+                    // I have it writing out the weights coming from a Layer 0 node above. But I don't have any lines comg out of 
+                    // the node, and the text formatting looks like crap. Do I need to recreate the small nodes, and superimpose the 
+                    // weight over the line? And also make those all nodes clickable?
+                    // *** QUESTION *** Should I turn the node ID into a CSS ID selector? Will this make it easier to link nodes
+                    // with a line?
+                } else if (nodesData.layer == 1) {
+
+                } else {
+
+                }
             }
         </script>
         <style>
@@ -150,6 +168,19 @@
             #zoom_image {
 
             }
+
+            /* The styling for the node circle */
+            .node-circle {
+                stroke: black;
+                fill: white;
+            }
+
+            /* The styling for the text in the node circle */
+            .node-text {
+                font-size: 12px;
+                fill: black;
+                pointer-events: none; /* Ensures that text elements do not intercept mouse events */
+            }
         </style>
     </head>
         
@@ -223,34 +254,32 @@
 		        .attr("y2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).node * 40) + 100; });
 		        //.style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-            // Draw the nodes
-            svg.selectAll("circle")                     
-                .data(newGraph.nodes)                           // Do the following for each item in newGraph.nodes
-                .enter()                                        // Create a new empty DOM placeholder 
-                .append("circle")                               // Append a "circle" to the empty DOM placeholder
-                .attr("stroke", "black")
-                .attr("fill", "white")
-                .attr("r", nodeSize)
-                .attr("cx", function(d) {                       // Set the x coordinate using an anonymous function that accepts the current "data item"
-                    return ((d.layer * 500) + 100);             // Use 500px spacing between layers; use a 100px offset because this coordinate is the center of the circle
-                })
-                .attr("cy", function(d) {                       // Set the y coordinate using an anonymous function that accepts the current "data item"
-                    return ((d.node * 40) + 100);               // Use 40px spacing between nodes; use a 100px offset because this coordinate is the center of the circle
-                });
-
-            // Add labels for the nodes.    
-            svg.selectAll("text")                     
+            // Draw the nodes and add labels. There is a group (<g>) for each node, containing both the circle and text 
+            // elements. We set the transform attribute on the group to position them correctly. We also apply a click 
+            // event listener to each group. We use CSS classes for styling.
+            svg.selectAll("g.node-group")
                 .data(newGraph.nodes)
                 .enter()
-                .append("text")
-                .text(function(d) {               
-                    return d.bias;      
+                .append("g")
+                .attr("class", "node-group")
+                .attr("transform", function(d) {
+                    return "translate(" + ((d.layer * 500) + 100) + "," + ((d.node * 40) + 100) + ")";
                 })
-                .attr("x", function(d) {
-                    return ((d.layer * 500) + 95);
+                .on("click", function(d) {
+                    openZoom(d.id);
                 })
-                .attr("y", function(d) {
-                    return ((d.node * 40) + 105);
+                .each(function(d) {
+                    // Append circle
+                    d3.select(this).append("circle")
+                    .attr("class", "node-circle")
+                    .attr("r", nodeSize);
+
+                // Append text
+                d3.select(this).append("text")
+                    .attr("class", "node-text")
+                    .text(d.node)
+                    .attr("dy", 5)
+                    .attr("text-anchor", "middle");
                 });
 
 		    // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)

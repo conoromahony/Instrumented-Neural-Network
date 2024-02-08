@@ -92,12 +92,7 @@ def hello():
     return render_template("index.html", network_graph=output_str)
 
 
-# Create three areas on screen:
-#  - Top area for metadata
-#  - Full network on left
-#  - Close up on right
-# Default the close up to node 10001. To see close up for another node, click on the node in the full network.
-# In close up, show five nodes in that layer, plus two node on next layer, and one node on next layer.
-
-# *** I'm in layout.html, working on the function that displays a "close up" of a node in the network.
-# *** After that, I need to make the circles in the larger network clickable.
+# *** just made the circles in the larger network clickable.
+# *** next: add headings in whole network (input, hidden, output)
+# *** next: add instructions to click on the circles
+# *** next: add incoming and outgoing links to zoom-up view
