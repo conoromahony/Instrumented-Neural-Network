@@ -28,69 +28,110 @@
                 evt.currentTarget.className += " active";
             }
         </script>
+
         <script type="text/javascript">
-            // JavaScript function that displays a "close up" of nodes in the network.
-            // It takes one argument nodeID, which is the ID of the node to zoom in on.
+            // JavaScript function that displays the "close up" of a node in the network.
+            // It takes one argument (nodeID), which is the ID of the node to zoom in on.
             function openZoom(nodeID) {
                 // Declare all variables. Note that I'm using "const" for variables that don't need reassignment.
-                const zoomContent = document.getElementById("zoom_image");
                 const nodesData = newGraph.nodes.find(currentNode => currentNode.id === parseInt(nodeID));
+                const zoomContent = document.getElementById("zoom_image");
             
+                // This helper function adds a text element to the SVG image.
+                const addText = (x, y, fontSize, fontWeight, fontFamily, text) => {
+                    const nodeText = document.createElementNS('http://www.w3.org/2000/svg','text');
+                    nodeText.setAttributeNS(null, "x", x);
+                    nodeText.setAttributeNS(null, "y", y);
+                    nodeText.setAttributeNS(null, "font-size", fontSize);
+                    nodeText.setAttributeNS(null, "font-weight", fontWeight);
+                    nodeText.setAttributeNS(null, "font-family", fontFamily);
+                    nodeText.innerHTML = text;
+                    zoomContent.appendChild(nodeText);
+                };
+
+                // This helper function adds a line element to the SVG image.
+                const addLine = (x1, y1, x2, y2) => {
+                    const nodeConnection = document.createElementNS('http://www.w3.org/2000/svg','line');
+                    nodeConnection.setAttributeNS(null, "stroke", "black");
+                    nodeConnection.setAttributeNS(null, "x1", x1);
+                    nodeConnection.setAttributeNS(null, "y1", y1);
+                    nodeConnection.setAttributeNS(null, "x2", x2);
+                    nodeConnection.setAttributeNS(null, "y2", y2);
+                    zoomContent.appendChild(nodeConnection)                    
+                };
+
                 // If it has existing elements, remove them (so we can add new elements).
                 zoomContent.querySelectorAll('*').forEach(element => element.remove());
-            
+
+                // In the "Zoomed In" SVG image, include the headings.
+                addText(575, 30, 20, "bold", "sans-serif", "Close-up of Node in Network");
+
                 // Add a circle for the selected node to the zoomContent SVG image.
                 const zoomNode = document.createElementNS('http://www.w3.org/2000/svg','circle');
                 zoomNode.setAttributeNS(null, "stroke", "black");
                 zoomNode.setAttributeNS(null, "fill", "white");
                 zoomNode.setAttributeNS(null, "r", 200);
-                zoomNode.setAttributeNS(null, "cx", 500);
-                zoomNode.setAttributeNS(null, "cy", 400);
+                zoomNode.setAttributeNS(null, "cx", 700);
+                zoomNode.setAttributeNS(null, "cy", 700);
                 zoomContent.appendChild(zoomNode)
-
-                // This function creates a text element (that contain the node information) in the circle.
-                // We call this function below.
-                const nodeInfo = (x, y, text) => {
-                    const nodeText = document.createElementNS('http://www.w3.org/2000/svg','text');
-                    nodeText.setAttributeNS(null, "x", x);
-                    nodeText.setAttributeNS(null, "y", y);
-                    nodeText.innerHTML = text;
-                    zoomContent.appendChild(nodeText);
-                };
 
                 // Add text elements that show information about the node.
                 // Note that I'm using the backtick character (`) to indicate template literals, where something 
                 // like "${name}" within the backticks is a placeholder that gets replaced with the value of the 
                 // variable "name" when the string is evaluated.
-                nodeInfo(400, 350, `Node ID:`);
-                nodeInfo(500, 350, `${nodesData.id}`);
-                nodeInfo(400, 400, `Layer:`);
-                nodeInfo(500, 400, `${nodesData.layer}`);
-                nodeInfo(400, 450, `Node:`);
-                nodeInfo(500, 450, `${nodesData.node}`);
-                nodeInfo(400, 500, `Bias:`);
-                nodeInfo(500, 500, `${nodesData.bias}`);
+                addText(600, 630, 15, "normal", "serif", "Node ID:");
+                addText(700, 630, 15, "normal", "serif", `${nodesData.id}`);
+                addText(600, 680, 15, "normal", "serif", "Layer:");
+                addText(700, 680, 15, "normal", "serif", `${nodesData.layer}`);
+                addText(600, 730, 15, "normal", "serif", "Node:");
+                addText(700, 730, 15, "normal", "serif", `${nodesData.node}`);
+                addText(600, 780, 15, "normal", "serif", "Bias:");
+                addText(700, 780, 15, "normal", "serif", `${nodesData.bias}`);
 
                 // Note that I'm hardcoding the fact that there's one input, one hidden, and one output layer.
                 // TODO: Change this to accommodate different network architectures.
+                // If the selected node is in the Input Layer...
                 if (nodesData.layer == 0) {
-                    var y_counter = 0;
+                    addText(50, 710, 15, "normal", "serif", "Input to Network");
+                    addLine(165, 707, 500, 707);                    
+
+                    var y_counter = 110;
+                    // Get every node whose source is equal to the current node ID, and write an entry for them.
                     newGraph.connections.forEach(function (arrayItem) {
                         if (arrayItem.source == nodeID) {
-                            y_counter = y_counter + 40;
-                            nodeInfo(900, y_counter, `${arrayItem.weight}`);
+                            y_counter = y_counter + 25;
+                            addText(1100, y_counter, 15, "normal", "serif", `Node: ${arrayItem.target}, Weight: ${arrayItem.weight}`);
+                            addLine(900, 707, 1090, y_counter + 5);
                         }
                     })
-                    // *** HERE *** I'm outputting the weights of the connections coming into and going out of the zoomed in node.
-                    // I have it writing out the weights coming from a Layer 0 node above. But I don't have any lines comg out of 
-                    // the node, and the text formatting looks like crap. Do I need to recreate the small nodes, and superimpose the 
-                    // weight over the line? And also make those all nodes clickable?
-                    // *** QUESTION *** Should I turn the node ID into a CSS ID selector? Will this make it easier to link nodes
-                    // with a line?
+
+                // If the selected node is in the Hidden Layer...
                 } else if (nodesData.layer == 1) {
+                    var y_counter = 110;
+                    newGraph.connections.forEach(function (arrayItem) {
+                        if (arrayItem.target == nodeID) {
+                            y_counter = y_counter + 25;
+                            addText(50, y_counter, 15, "normal", "serif", `Node: ${arrayItem.source}, Weight: ${arrayItem.weight}`);
+                        }
+                    })
+                    var y_counter = 110;
+                    newGraph.connections.forEach(function (arrayItem) {
+                        if (arrayItem.source == nodeID) {
+                            y_counter = y_counter + 25;
+                            addText(1100, y_counter, 15, "normal", "serif", `Node: ${arrayItem.target}, Weight: ${arrayItem.weight}`);
+                        }
+                    })
 
+                // If the selected node is in the Output Layer...    
                 } else {
-
+                    var y_counter = 110;
+                    newGraph.connections.forEach(function (arrayItem) {
+                        if (arrayItem.target == nodeID) {
+                            y_counter = y_counter + 25;
+                            addText(50, y_counter, 15, "normal", "serif", `Node: ${arrayItem.source}, Weight: ${arrayItem.weight}`);
+                        }
+                    })
+                    addText(1100, 725, 15, "normal", "serif", "Output from Network");
                 }
             }
         </script>
@@ -144,19 +185,24 @@
 
             /* Neural Network - Style for the bottom area that displays the "whole network" and the "close up" */
             #neural_body {
-                display: flex; 
+                display: inline-flex;
             }
 
             /* Neural Network - Style for the DIV containing the "whole network" */
             #neural_whole {
-                background: #b7b7b7;
+                background: #7fcdcd;
+                position: relative;
+                height: 100%;
                 overflow: scroll;
             } 
 
             /* Neural Network - Style for the DIV containing the "close up" */
             #neural_zoom {
                 flex-grow: 1; 
-                background: #9b9b9b;
+                background: #98b4d4;
+                position: relative;
+                height: 100%;
+                overflow: scroll;
             }
 
             /* Neural Network - Style for the SVG containing the "whole network" */
@@ -241,29 +287,54 @@
             document.getElementById('activation_fn').innerHTML = activation_fn;
             document.getElementById('loss_fn').innerHTML = loss_fn;
 
-            // Draw the links between nodes.  I'm adding the connections first, because I want the nodes to be 
-            // written later so they sit on top of the connections. Otherwise, the connection lines obscure the nodes.
+            const entireContent = document.getElementById("network_image");
+
+            // This function creates a text element (that contains the node information) in the circle.
+            // We call this function below.
+            const nodeInfo = (x, y, fontSize, fontWeight, fontFamily, text) => {
+                const nodeText = document.createElementNS('http://www.w3.org/2000/svg','text');
+                nodeText.setAttributeNS(null, "x", x);
+                nodeText.setAttributeNS(null, "y", y);
+                nodeText.setAttributeNS(null, "font-size", fontSize);
+                nodeText.setAttributeNS(null, "font-weight", fontWeight);
+                nodeText.setAttributeNS(null, "font-family", fontFamily);
+                nodeText.innerHTML = text;
+                entireContent.appendChild(nodeText);
+            };
+
+            // In the "Entire Neural Network" SVG image, include headings.
+            // TODO: This hardcodes the headings. They should instead be programatically generated for each layer.
+            nodeInfo(200, 30, 20, "bold", "sans-serif", "Entire Neural Network");
+            nodeInfo(170, 60, 15, "normal", "serif", "To see the details for a node, click on the circle.");
+            nodeInfo(55, 110, 15, "bold", "sans-serif", "Input Layer");
+            nodeInfo(250, 110, 15, "bold", "sans-serif", "Hidden Layer");
+            nodeInfo(450, 110, 15, "bold", "sans-serif", "Output Layer");
+
+            // In the "Entire Neural Network" SVG image, draw the links between nodes.  I'm adding the connections first, 
+            // because I want the nodes to be written later so they sit on top of the connections. Otherwise, the connection 
+            // lines obscure the nodes.
 		    svg.selectAll(".link")
 		        .data(newGraph.connections)
 		        .enter()
                 .append("line")
 		        .attr("class", "link")
-                .attr("x1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).layer * 500) + 100; })
-		        .attr("y1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).node * 40) + 100; })
-		        .attr("x2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).layer * 500) + 100; })
-		        .attr("y2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).node * 40) + 100; });
-		        //.style("stroke-width", function(d) { return Math.sqrt(d.value); });
+                .attr("x1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).layer * 200) + 100; })
+		        .attr("y1", function(d) { return ((newGraph.nodes.find(n => n.id === d.source)).node * 35) + 110; })
+		        .attr("x2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).layer * 200) + 100; })
+		        .attr("y2", function(d) { return ((newGraph.nodes.find(n => n.id === d.target)).node * 35) + 110; })
+		        .style("stroke-width", function(d) { return Math.sqrt(d.weight); });
 
-            // Draw the nodes and add labels. There is a group (<g>) for each node, containing both the circle and text 
-            // elements. We set the transform attribute on the group to position them correctly. We also apply a click 
-            // event listener to each group. We use CSS classes for styling.
+            // In the "Entire Neural Network" SVG image, draw the circles for the nodes and add the labels. There is a 
+            // group (<g>) for each node, containing both the circle and text elements. We set the transform attribute on 
+            // the group to position them correctly. We also apply a click event listener to each group. We use CSS classes 
+            // for styling.
             svg.selectAll("g.node-group")
                 .data(newGraph.nodes)
                 .enter()
                 .append("g")
                 .attr("class", "node-group")
                 .attr("transform", function(d) {
-                    return "translate(" + ((d.layer * 500) + 100) + "," + ((d.node * 40) + 100) + ")";
+                    return "translate(" + ((d.layer * 200) + 100) + "," + ((d.node * 35) + 110) + ")";
                 })
                 .on("click", function(d) {
                     openZoom(d.id);
@@ -282,18 +353,25 @@
                     .attr("text-anchor", "middle");
                 });
 
-		    // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)
-            var  svg_container = document.getElementById("network_image");
-            var  bbox = svg_container.getBBox();
+		    // In the "Entire Neural Network" SVG image, set the height and width of the SVG to those of the bounding box 
+            // (so we can see all nodes).
+            var svg_container = document.getElementById("network_image");
+            var div_container = document.getElementById("neural_whole");
+            var bbox = svg_container.getBBox();
+            var whole_width = bbox.x + bbox.width + bbox.x;
+            var whole_height = bbox.y + bbox.height + bbox.y;
             svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
             svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
 
-            // Set the height and width of the SVG to those of the bounding box (so we can see all nodes)
-            var  svg_container = document.getElementById("zoom_image");
-            var  bbox = svg_container.getBBox();
-            svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
-            svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
-
+            // In the "Zoomed In" SVG image, set the height and width of the SVG to those of the bounding box (so we can 
+            // see all nodes).
+            svg_container = document.getElementById("zoom_image");
+            div_container = document.getElementById("neural_zoom");
+            bbox = svg_container.getBBox();
+            var zoom_width = bbox.x + bbox.width + bbox.x;
+            var zoom_height = bbox.y + bbox.height + bbox.y;
+            svg_container.setAttribute("width", zoom_width);
+            svg_container.setAttribute("height", zoom_height);
         </script>
     </body>
 </html>

@@ -92,7 +92,7 @@ def hello():
     return render_template("index.html", network_graph=output_str)
 
 
-# *** just made the circles in the larger network clickable.
-# *** next: add headings in whole network (input, hidden, output)
-# *** next: add instructions to click on the circles
-# *** next: add incoming and outgoing links to zoom-up view
+# *** CURRENTLY: adding incoming and outgoing lines/links to close-up view (in layout.html)
+# *** NEXT: finish adding lines/links (have to do for hidden layer and output layer)
+# *** THEN: figure out how to center the contents of the columns
+# *** ALSO: color the selected node
