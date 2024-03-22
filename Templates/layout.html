@@ -60,79 +60,118 @@
                     zoomContent.appendChild(nodeConnection)                    
                 };
 
+                // This helper function adds a circle to the SVG image.
+                const addCircle = (r, cx, cy) => {
+                    const nodeCircle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+                    nodeCircle.setAttributeNS(null, "stroke", "black");
+                    nodeCircle.setAttributeNS(null, "fill", "white");
+                    nodeCircle.setAttributeNS(null, "r", r);
+                    nodeCircle.setAttributeNS(null, "cx", cx);
+                    nodeCircle.setAttributeNS(null, "cy", cy);
+                    zoomContent.appendChild(nodeCircle)                    
+                };
+
                 // If it has existing elements, remove them (so we can add new elements).
                 zoomContent.querySelectorAll('*').forEach(element => element.remove());
 
                 // In the "Zoomed In" SVG image, include the headings.
-                addText(575, 30, 20, "bold", "sans-serif", "Close-up of Node in Network");
+                addText(575, 30, 20, "bold", "sans-serif", "Close-up of Node");
 
                 // Add a circle for the selected node to the zoomContent SVG image.
-                const zoomNode = document.createElementNS('http://www.w3.org/2000/svg','circle');
-                zoomNode.setAttributeNS(null, "stroke", "black");
-                zoomNode.setAttributeNS(null, "fill", "white");
-                zoomNode.setAttributeNS(null, "r", 200);
-                zoomNode.setAttributeNS(null, "cx", 700);
-                zoomNode.setAttributeNS(null, "cy", 700);
-                zoomContent.appendChild(zoomNode)
+                addCircle(200, 700, 850);
 
                 // Add text elements that show information about the node.
                 // Note that I'm using the backtick character (`) to indicate template literals, where something 
                 // like "${name}" within the backticks is a placeholder that gets replaced with the value of the 
                 // variable "name" when the string is evaluated.
-                addText(600, 630, 15, "normal", "serif", "Node ID:");
-                addText(700, 630, 15, "normal", "serif", `${nodesData.id}`);
-                addText(600, 680, 15, "normal", "serif", "Layer:");
-                addText(700, 680, 15, "normal", "serif", `${nodesData.layer}`);
-                addText(600, 730, 15, "normal", "serif", "Node:");
-                addText(700, 730, 15, "normal", "serif", `${nodesData.node}`);
-                addText(600, 780, 15, "normal", "serif", "Bias:");
-                addText(700, 780, 15, "normal", "serif", `${nodesData.bias}`);
+                addText(620, 830, 15, "normal", "serif", "Layer:");
+                addText(700, 830, 15, "normal", "serif", `${nodesData.layer}`);
+                addText(620, 880, 15, "normal", "serif", "Node:");
+                addText(700, 880, 15, "normal", "serif", `${nodesData.node}`);
+                addText(620, 930, 15, "normal", "serif", "Bias:");
+                addText(700, 930, 15, "normal", "serif", `${nodesData.bias}`);
 
                 // Note that I'm hardcoding the fact that there's one input, one hidden, and one output layer.
                 // TODO: Change this to accommodate different network architectures.
+                // TODO: All positions are hardcoded. Programatically determine x and y coordinates.
                 // If the selected node is in the Input Layer...
                 if (nodesData.layer == 0) {
-                    addText(50, 710, 15, "normal", "serif", "Input to Network");
-                    addLine(165, 707, 500, 707);                    
-
-                    var y_counter = 110;
+                    var nodeCounter = 0;                   
+                    var y_counter = 120;
+                    addText(665, 110, 15, "bold", "sans-serif", "Input Layer");
+                    addText(1050, 110, 15, "bold", "sans-serif", "Hidden Layer");
+                    addText(50, 860, 15, "normal", "serif", "Input to Network");
+                    addLine(165, 857, 500, 857);
                     // Get every node whose source is equal to the current node ID, and write an entry for them.
                     newGraph.connections.forEach(function (arrayItem) {
                         if (arrayItem.source == nodeID) {
                             y_counter = y_counter + 25;
-                            addText(1100, y_counter, 15, "normal", "serif", `Node: ${arrayItem.target}, Weight: ${arrayItem.weight}`);
-                            addLine(900, 707, 1090, y_counter + 5);
+                            nodeCounter = nodeCounter + 1;
+                            addCircle(10, 1100, y_counter - 7);
+                            addText(1095, y_counter - 3, 12, "normal", "serif", nodeCounter);
+                            addText(1125, y_counter, 15, "normal", "serif", `W: ${arrayItem.weight}`);
+                            addLine(900, 857, 1090, y_counter - 5);
                         }
                     })
 
                 // If the selected node is in the Hidden Layer...
                 } else if (nodesData.layer == 1) {
-                    var y_counter = 110;
+                    var nodeCounter = 0;                   
+                    var y_counter = 120;
+                    addText(150, 110, 15, "bold", "sans-serif", "Input Layer");
+                    addText(665, 110, 15, "bold", "sans-serif", "Hidden Layer");
+                    addText(1050, 110, 15, "bold", "sans-serif", "Output Layer");
                     newGraph.connections.forEach(function (arrayItem) {
                         if (arrayItem.target == nodeID) {
                             y_counter = y_counter + 25;
-                            addText(50, y_counter, 15, "normal", "serif", `Node: ${arrayItem.source}, Weight: ${arrayItem.weight}`);
+                            nodeCounter = nodeCounter + 1;
+                            addCircle(10, 100, y_counter - 7);
+                            addText(95, y_counter - 3, 12, "normal", "serif", nodeCounter);
+                            addText(125, y_counter, 15, "normal", "serif", `W: ${arrayItem.weight}`);
+                            addLine(325, y_counter - 5, 500, 857);
                         }
                     })
-                    var y_counter = 110;
+                    var nodeCounter = 0;                   
+                    var y_counter = 732;
                     newGraph.connections.forEach(function (arrayItem) {
                         if (arrayItem.source == nodeID) {
                             y_counter = y_counter + 25;
-                            addText(1100, y_counter, 15, "normal", "serif", `Node: ${arrayItem.target}, Weight: ${arrayItem.weight}`);
+                            nodeCounter = nodeCounter + 1;
+                            addCircle(10, 1100, y_counter - 7);
+                            addText(1095, y_counter - 3, 12, "normal", "serif", nodeCounter);
+                            addText(1125, y_counter, 15, "normal", "serif", `W: ${arrayItem.weight}`);
+                            addLine(900, 857, 1090, y_counter - 5);
                         }
                     })
 
                 // If the selected node is in the Output Layer...    
                 } else {
-                    var y_counter = 110;
+                    var nodeCounter = 0;                   
+                    var y_counter = 120;
+                    addText(50, 110, 15, "bold", "sans-serif", "Hidden Layer");
+                    addText(665, 110, 15, "bold", "sans-serif", "Output Layer");
+                    // Get every node whose source is equal to the current node ID, and write an entry for them.
                     newGraph.connections.forEach(function (arrayItem) {
                         if (arrayItem.target == nodeID) {
                             y_counter = y_counter + 25;
-                            addText(50, y_counter, 15, "normal", "serif", `Node: ${arrayItem.source}, Weight: ${arrayItem.weight}`);
+                            nodeCounter = nodeCounter + 1;
+                            addCircle(10, 100, y_counter - 7);
+                            addText(95, y_counter - 3, 12, "normal", "serif", nodeCounter);
+                            addText(125, y_counter, 15, "normal", "serif", `W: ${arrayItem.weight}`);
+                            addLine(325, y_counter - 5, 500, 857);
                         }
                     })
-                    addText(1100, 725, 15, "normal", "serif", "Output from Network");
+                    addText(1100, 860, 15, "normal", "serif", "Output from Network");
+                    addLine(900, 857, 1090, 857);                    
                 }
+
+                // In the "Zoomed In" SVG image, set the height and width of the SVG to those of the bounding  
+                // box (so we cansee all nodes).
+                svg_container = document.getElementById("zoom_image");
+                div_container = document.getElementById("neural_zoom");
+                bbox = svg_container.getBBox();
+                svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
+                svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
             }
         </script>
         <style>
@@ -245,11 +284,17 @@
         <!-- Tab content -->
         <div id="Training" class="tabcontent">
             <div id="neural_nav">
-                <p>Iteration <span id="iteration_num"></span> of <span id="num_iterations"></span></p>
-                <p>Direction: <span id="direction"></span></p>
-                <p>Alpha: <span id="alpha_value"></span></p>
-                <p>Activation function: <span id="activation_fn"></span></p>
-                <p>Loss function: <span id="loss_fn"></span></p>
+                <p>
+                    <b>Direction:</b> <span id="direction"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <b>Alpha:</b> <span id="alpha_value"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <b>Activation:</b> <span id="activation_fn"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <b>Loss:</b> <span id="loss_fn"></span>
+                </p>
+                <p>
+                    <a href="/previous"><button>⬅️ Previous</button><a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<b>Iteration:</b> <span id="iteration_num"></span> of <span id="num_iterations"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/next"><button>Next ➡️</button></a>
+                </p>
             </div>
             <div id="neural_body">
                 <div id="neural_whole">
@@ -358,20 +403,8 @@
             var svg_container = document.getElementById("network_image");
             var div_container = document.getElementById("neural_whole");
             var bbox = svg_container.getBBox();
-            var whole_width = bbox.x + bbox.width + bbox.x;
-            var whole_height = bbox.y + bbox.height + bbox.y;
             svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
             svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
-
-            // In the "Zoomed In" SVG image, set the height and width of the SVG to those of the bounding box (so we can 
-            // see all nodes).
-            svg_container = document.getElementById("zoom_image");
-            div_container = document.getElementById("neural_zoom");
-            bbox = svg_container.getBBox();
-            var zoom_width = bbox.x + bbox.width + bbox.x;
-            var zoom_height = bbox.y + bbox.height + bbox.y;
-            svg_container.setAttribute("width", zoom_width);
-            svg_container.setAttribute("height", zoom_height);
         </script>
     </body>
 </html>
