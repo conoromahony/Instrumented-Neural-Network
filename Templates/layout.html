@@ -291,7 +291,7 @@
                     <b>Loss:</b> <span id="loss_fn"></span>
                 </p>
                 <p>
-                    <a href="/previous"><button>⬅️ Previous</button><a>
+                    <a href="/previous"><button>⬅️ Previous</button></a>
                     &nbsp;&nbsp;&nbsp;&nbsp;<b>Iteration:</b> <span id="iteration_num"></span> of <span id="num_iterations"></span>&nbsp;&nbsp;&nbsp;&nbsp;
                     <a href="/next"><button>Next ➡️</button></a>
                 </p>
@@ -325,7 +325,7 @@
             var nodeSize = 15;
             var svg = d3.select("#network_image");
 
-            document.getElementById('iteration_num').innerHTML = iteration_number;
+            document.getElementById('iteration_num').innerHTML = parseInt(iteration_number) + 1;
             document.getElementById('num_iterations').innerHTML = num_iterations;
             document.getElementById('direction').innerHTML = direction;
             document.getElementById('alpha_value').innerHTML = alpha_value;
