@@ -92,16 +92,13 @@ def hello():
 
     return render_template("index.html", network_graph=output_str)
 
-@app.route('/next')
-def next_iteration():
+@app.route('/first')
+def first_iteration():
     # TODO: Is it a problem that I am not closing the file, before opening another?
     # The following lines tells this module to use the global values of variables in this function.
     global file_name_number
     global num_iterations
-    if int(file_name_number) < int(num_iterations) - 1:
-        file_name_number = str(int(file_name_number) + 1)
-    else:
-        file_name_number = str(int(num_iterations) - 1)
+    file_name_number = "0"
     file_object = open(directory_name + file_name_base + file_name_number)
     working_data = json.load(file_object)
     nodes_data = working_data["nodes"]
@@ -117,7 +114,6 @@ def next_iteration():
         new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
         output_str += new_str
     return render_template("index.html", network_graph=output_str)
-
 
 @app.route('/previous')
 def previous_iteration():
@@ -144,11 +140,55 @@ def previous_iteration():
         output_str += new_str
     return render_template("index.html", network_graph=output_str)
 
+@app.route('/next')
+def next_iteration():
+    # TODO: Is it a problem that I am not closing the file, before opening another?
+    # The following lines tells this module to use the global values of variables in this function.
+    global file_name_number
+    global num_iterations
+    if int(file_name_number) < int(num_iterations) - 1:
+        file_name_number = str(int(file_name_number) + 1)
+    else:
+        file_name_number = str(int(num_iterations) - 1)
+    file_object = open(directory_name + file_name_base + file_name_number)
+    working_data = json.load(file_object)
+    nodes_data = working_data["nodes"]
+    connections_data = working_data["connections"]
+    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
+    for item in working_data["metadata"][0].keys():
+        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
+        output_str += new_str
+    for node in nodes_data:
+        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
+        output_str += new_str
+    for link in connections_data:
+        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
+        output_str += new_str
+    return render_template("index.html", network_graph=output_str)
 
-# *** CURRENTLY: adding buttons to step through training
-# *** Add button to go to start or end
-# *** Add button to play / pause through iterations
-# *** Maintain node close-up view when going to next or previous
+@app.route('/last')
+def last_iteration():
+    # TODO: Is it a problem that I am not closing the file, before opening another?
+    # The following lines tells this module to use the global values of variables in this function.
+    global file_name_number
+    global num_iterations
+    file_name_number = str(num_iterations - 1)
+    file_object = open(directory_name + file_name_base + file_name_number)
+    working_data = json.load(file_object)
+    nodes_data = working_data["nodes"]
+    connections_data = working_data["connections"]
+    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
+    for item in working_data["metadata"][0].keys():
+        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
+        output_str += new_str
+    for node in nodes_data:
+        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
+        output_str += new_str
+    for link in connections_data:
+        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
+        output_str += new_str
+    return render_template("index.html", network_graph=output_str)
+
 
 # *** Maybe generate mathplotlib images upon training runs, store them in the folder, and display them in the UI?
 # ***  Training error rate

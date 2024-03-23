@@ -43,7 +43,7 @@
                 oldSelectedNode = oldSelectedCookie.split('=')[1];
                 document.getElementById(oldSelectedNode.toString()).setAttribute("style", "fill: white;");
                 document.cookie = "selectedNode=" + nodeID.toString();
-                document.getElementById(nodeID.toString()).setAttribute("style", "fill: green;");
+                document.getElementById(nodeID.toString()).setAttribute("style", "fill: #BEE3D1;");
 
                 // This helper function adds a text element to the SVG image.
                 const addText = (x, y, fontSize, fontWeight, fontFamily, text) => {
@@ -83,7 +83,8 @@
                 zoomContent.querySelectorAll('*').forEach(element => element.remove());
 
                 // In the "Zoomed In" SVG image, include the headings.
-                addText(575, 30, 20, "bold", "sans-serif", "Close-up of Node");
+                addText(630, 30, 20, "bold", "sans-serif", "Close-up of Node");
+                addText(450, 60, 15, "normal", "Verdana, Geneva, Tahoma, sans-serif", "Displays information about the node highlighted (in green) to the left.");
 
                 // Add a circle for the selected node to the zoomContent SVG image.
                 addCircle(200, 700, 850);
@@ -92,12 +93,12 @@
                 // Note that I'm using the backtick character (`) to indicate template literals, where something 
                 // like "${name}" within the backticks is a placeholder that gets replaced with the value of the 
                 // variable "name" when the string is evaluated.
-                addText(620, 830, 15, "normal", "serif", "Layer:");
-                addText(700, 830, 15, "normal", "serif", `${nodesData.layer}`);
-                addText(620, 880, 15, "normal", "serif", "Node:");
-                addText(700, 880, 15, "normal", "serif", `${nodesData.node}`);
-                addText(620, 930, 15, "normal", "serif", "Bias:");
-                addText(700, 930, 15, "normal", "serif", `${nodesData.bias}`);
+                addText(610, 815, 15, "normal", "serif", "Layer:");
+                addText(690, 815, 15, "normal", "serif", `${nodesData.layer}`);
+                addText(610, 865, 15, "normal", "serif", "Node:");
+                addText(690, 865, 15, "normal", "serif", `${nodesData.node}`);
+                addText(610, 915, 15, "normal", "serif", "Bias:");
+                addText(690, 915, 15, "normal", "serif", `${nodesData.bias}`);
 
                 // Note that I'm hardcoding the fact that there's one input, one hidden, and one output layer.
                 // TODO: Change this to accommodate different network architectures.
@@ -183,10 +184,15 @@
             }
         </script>
         <style>
+            html {
+                background: #f5f5f5;
+                width: 100%;
+                height: 100%;
+            }
+
             /* Tabs - Style the tabs */
             .tab {
                 overflow: hidden;
-                border: 1px solid #ccc;
                 background-color: #f1f1f1;
             }
 
@@ -198,25 +204,36 @@
                 outline: none;
                 cursor: pointer;
                 padding: 14px 16px;
+                margin-right: 10px;
                 transition: 0.3s;
+                font-size: 18;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px; 
+                background-color: #ccc;
             }
 
             /* Tabs - Change background color of buttons on hover */
             .tab button:hover {
-                background-color: #ddd;
+                font-weight: bold;
             }
 
             /* Tabs - Create an active/current tablink class */
             .tab button.active {
-                background-color: #ccc;
+                font-weight: bold;
+                background-color: #31A66C;
+                color: #eee;
             }
 
             /* Tabs - Style the tab content */
             .tabcontent {
                 display: none;
-                padding: 6px 12px;
-                border: 1px solid #ccc;
+                padding: 12px 24px 12px 12px;
                 border-top: none;
+                background-color: #31A66C;
+                color: #222;
+                width: fit-content;
+                border-top-right-radius: 15px; 
             }
 
             /* Training Tab - Whole Neural Network - Style for connections between nodes */
@@ -227,7 +244,11 @@
 
             /* Training Tab - Style for the top area that displays the meta-data */
             #neural_nav {
-
+                background-color: #e1e1e1;
+                border-radius: 15px;
+                padding: 12px 12px 12px 24px;
+                margin-bottom: 10px;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
             }
 
             /* Neural Network - Style for the bottom area that displays the "whole network" and the "close up" */
@@ -237,7 +258,10 @@
 
             /* Neural Network - Style for the DIV containing the "whole network" */
             #neural_whole {
-                background: #7fcdcd;
+                background: #e1e1e1;
+                border-radius: 15px;
+                padding: 12px 12px;
+                margin-right: 10px;
                 position: relative;
                 height: 100%;
                 overflow: scroll;
@@ -246,20 +270,20 @@
             /* Neural Network - Style for the DIV containing the "close up" */
             #neural_zoom {
                 flex-grow: 1; 
-                background: #98b4d4;
+                background: #BEE3D1;
+                padding: 12px 12px;
+                border-radius: 15px;
                 position: relative;
                 height: 100%;
                 overflow: scroll;
             }
 
-            /* Neural Network - Style for the SVG containing the "whole network" */
-            #network_image {
-
-            }
-
-            /* Neural Network - Style for the SVG containing the "close up" */
-            #zoom_image {
-
+            button {
+                border-radius: 3px;
+                color: #31A66C;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+                font-weight: bold;
+                box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             }
 
             /* The styling for the node circle */
@@ -273,11 +297,6 @@
                 font-size: 12px;
                 fill: black;
                 pointer-events: none; /* Ensures that text elements do not intercept mouse events */
-            }
-
-            .selected-node {
-                stroke: green;
-                fill: green;
             }
         </style>
     </head>
@@ -297,16 +316,21 @@
         <!-- Tab content -->
         <div id="Training" class="tabcontent">
             <div id="neural_nav">
+                <!--
                 <p>
                     <b>Direction:</b> <span id="direction"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <b>Alpha:</b> <span id="alpha_value"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <b>Activation:</b> <span id="activation_fn"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <b>Loss:</b> <span id="loss_fn"></span>
                 </p>
+                -->
+                <p>Use the buttons below to step through the training epochs. As you step through the epochs, the network's weights and biases will update.</p>
                 <p>
-                    <a href="/previous"><button>⬅️ Previous</button></a>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<b>Iteration:</b> <span id="iteration_num"></span> of <span id="num_iterations"></span>&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="/next"><button>Next ➡️</button></a>
+                    <a href="/first"><button>⏮️ First</button></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/previous"><button>⬅️ Previous</button></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <b>Epoch:</b> <span id="iteration_num"></span> of <span id="num_iterations"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/next"><button>Next ➡️</button></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/last"><button>Last ⏭️</button></a>
                 </p>
             </div>
             <div id="neural_body">
@@ -338,10 +362,10 @@
 
             document.getElementById('iteration_num').innerHTML = parseInt(iteration_number) + 1;
             document.getElementById('num_iterations').innerHTML = num_iterations;
-            document.getElementById('direction').innerHTML = direction;
-            document.getElementById('alpha_value').innerHTML = alpha_value;
-            document.getElementById('activation_fn').innerHTML = activation_fn;
-            document.getElementById('loss_fn').innerHTML = loss_fn;
+            //document.getElementById('direction').innerHTML = direction;
+            //document.getElementById('alpha_value').innerHTML = alpha_value;
+            //document.getElementById('activation_fn').innerHTML = activation_fn;
+            //document.getElementById('loss_fn').innerHTML = loss_fn;
 
             const entireContent = document.getElementById("network_image");
 
@@ -361,7 +385,7 @@
             // In the "Entire Neural Network" SVG image, include headings.
             // TODO: This hardcodes the headings. They should instead be programatically generated for each layer.
             nodeInfo(200, 30, 20, "bold", "sans-serif", "Entire Neural Network");
-            nodeInfo(170, 60, 15, "normal", "serif", "To see the details for a node, click on the circle.");
+            nodeInfo(12, 60, 15, "normal", "Verdana, Geneva, Tahoma, sans-serif", "Click on a node to see a close-up of that node and it's connections to the right.");
             nodeInfo(55, 110, 15, "bold", "sans-serif", "Input Layer");
             nodeInfo(250, 110, 15, "bold", "sans-serif", "Hidden Layer");
             nodeInfo(450, 110, 15, "bold", "sans-serif", "Output Layer");
