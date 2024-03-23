@@ -13,7 +13,7 @@
 
 # To run:
 #  - Go to Desktop > Programming > Instrumented-Neural-Network
-#  - Type "python Simple-Neural-Nework.py"
+#  - Type "python Simple-Neural-Network.py"
 # 
 # To commit changes:
 #  - Edit with Visual Studio
@@ -33,8 +33,8 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-import time
-import os
+import matplotlib.ticker
+import os, shutil
 import json
 
 
@@ -42,16 +42,30 @@ num_input_nodes = 784
 num_hidden_layers = 1
 num_hidden_nodes = 64
 num_output_nodes = 10
-num_iterations = 10
+num_iterations = 100
 activation_fn = "Rectified Linear Unit (ReLU)"
 alpha_value = 0.1
 loss_fn = "Subtract a one hot encoding of the label from the probabilities"
 
+training_loss = []
+validation_loss = []
 
-# Create a directory for writing the neural network working data.
-# In the directory, ther will be one JSON file for each iteration though the neural network. 
-directory_name = "Neural-Network-Parameters-" + time.strftime("%Y%m%d-%H%M")
-os.makedirs(directory_name)
+
+# We will place our files in the "Neural-Network-Parameters" directory. If the directory does not exist, create it.
+# If the directory exists, clear its contents. In the directory, we will have one JSON file for each iteration (epoch). 
+# We will also store images for the test and validation error rates.
+directory_name = "Neural-Network-Parameters"
+if not os.path.isdir(directory_name):
+    os.makedirs(directory_name)
+for filename in os.listdir(directory_name):
+    file_path = os.path.join(directory_name, filename)
+    try:
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+    except Exception as e:
+        print('Failed to delete %s. Reason: %s' % (file_path, e))    
 
 
 # Create the initial weights and biases for the neural network.
@@ -171,7 +185,7 @@ def get_predictions(A2):
 
 # Get the accuracy between the predictions (i.e. A2) and Y (i.e. the labels).
 def get_accuracy(predictions, Y):
-    #print(predictions, Y)
+    print(predictions, Y)
     return np.sum(predictions == Y) / Y.size
 
 
@@ -287,6 +301,8 @@ def gradient_descent(X, Y, alpha, iterations):
 
         Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X)
         dW1, db1, dW2, db2 = backward_prop(Z1, A1, Z2, A2, W1, W2, X, Y)
+        predictions = get_predictions(A2)
+        training_loss.append(get_accuracy(predictions, Y))
 
         # TODO: Add the back propagation data to the serialized working data.
 
@@ -296,7 +312,7 @@ def gradient_descent(X, Y, alpha, iterations):
             # A2 are the predictions that come out the other end of forward propagation.
             predictions = get_predictions(A2)
             # Y are the image labels.
-            print(get_accuracy(predictions, Y))
+            print("Accuracy: ", get_accuracy(predictions, Y))
     return W1, b1, W2, b2
 
 
@@ -361,7 +377,18 @@ W1, b1, W2, b2 = gradient_descent(X_train, Y_train, alpha_value, num_iterations)
 # Let's have a look at the accuracy for the validation set.
 dev_predictions = make_predictions(X_dev, W1, b1, W2, b2)
 validation_accuracy = get_accuracy(dev_predictions, Y_dev)
-print(validation_accuracy)
+print("Validation Accuracy: ", validation_accuracy)
+
+iteration_array = np.arange(0, num_iterations)
+training_array = np.array(training_loss)
+print(training_array)
+plt.plot(iteration_array, training_array)
+plt.title("Neural Network Training - Accuracy at each Epoch", fontweight='bold')
+plt.xlabel("Epoch Number")
+plt.ylabel("Accuracy")
+formatter = matplotlib.ticker.PercentFormatter(xmax=1)
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.savefig("static/Training-Accuracy.png")
 
 # Need to write the JSON data.
 # Following instructions in: https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/

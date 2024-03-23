@@ -189,7 +189,9 @@
         <!-- Tab links -->
         <div class="tab">
             <button class="tablinks" onclick="openTab(event, 'Training')" id="defaultOpen">Training Explorer</button>
-            <button class="tablinks" onclick="openTab(event, 'Query')">Validation Explorer</button>
+            <button class="tablinks" onclick="openTab(event, 'TrainingAccuracy')">Training Accuracy</button>
+            <button class="tablinks" onclick="openTab(event, 'Validation')">Validation Explorer</button>
+            <button class="tablinks" onclick="openTab(event, 'ValidationAccuracy')">Validation Accuracy</button>
             <button class="tablinks" onclick="openTab(event, 'About')">About this Neural Network</button>
         </div>
 
@@ -223,10 +225,33 @@
             </div>    
         </div>
         
-        <div id="Query" class="tabcontent">
-            <h3>Query</h3>
+        <div id="TrainingAccuracy" class="tabcontent">
+            <div id="neural_nav">
+                <p>This graph shows the accuracy of the neural network at each epoch during the Training phase.</p>
+            </div>
+            <div id="neural_body">
+                <img src="{{ url_for('static', filename='Training-Accuracy.png') }}">
+            </div>
         </div>
         
+        <div id="Validation" class="tabcontent">
+            <div id="neural_nav">
+                <p>Use the buttons below to step through the training epochs. As you step through the epochs, the network's weights and biases will update.</p>
+            </div>
+            <div id="neural_body">
+
+            </div>
+        </div>
+
+        <div id="ValidationAccuracy" class="tabcontent">
+            <div id="neural_nav">
+                <p>This graph shows the accuracy of the neural network at each epoch during the Validation phase.</p>
+            </div>
+            <div id="neural_body">
+                <img src="{{ url_for('static', filename='Validation-Accuracy.png') }}">
+            </div>
+        </div>
+
         <div id="About" class="tabcontent">
             <h3>About</h3>
         </div>
