@@ -36,7 +36,15 @@
                 // Declare all variables. Note that I'm using "const" for variables that don't need reassignment.
                 const nodesData = newGraph.nodes.find(currentNode => currentNode.id === parseInt(nodeID));
                 const zoomContent = document.getElementById("zoom_image");
-            
+
+                // Clear highlighting for old selected node, store newly selected node in the cookie, and
+                // highlight the newly selected node.
+                let oldSelectedCookie = document.cookie;
+                oldSelectedNode = oldSelectedCookie.split('=')[1];
+                document.getElementById(oldSelectedNode.toString()).setAttribute("style", "fill: white;");
+                document.cookie = "selectedNode=" + nodeID.toString();
+                document.getElementById(nodeID.toString()).setAttribute("style", "fill: green;");
+
                 // This helper function adds a text element to the SVG image.
                 const addText = (x, y, fontSize, fontWeight, fontFamily, text) => {
                     const nodeText = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -266,6 +274,11 @@
                 fill: black;
                 pointer-events: none; /* Ensures that text elements do not intercept mouse events */
             }
+
+            .selected-node {
+                stroke: green;
+                fill: green;
+            }
         </style>
     </head>
         
@@ -276,8 +289,8 @@
 
         <!-- Tab links -->
         <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'Training')" id="defaultOpen">Training a Neural Network</button>
-            <button class="tablinks" onclick="openTab(event, 'Query')">Querying a Neural Network</button>
+            <button class="tablinks" onclick="openTab(event, 'Training')" id="defaultOpen">Training Explorer</button>
+            <button class="tablinks" onclick="openTab(event, 'Query')">Validation Explorer</button>
             <button class="tablinks" onclick="openTab(event, 'About')">About this Neural Network</button>
         </div>
 
@@ -315,10 +328,8 @@
         </div>
 
         <script type="text/javascript">
-            // Get the element with id="defaultOpen" and click on it
+            // Get the tab with the id="defaultOpen" and click on that tab to initially display it.
             document.getElementById("defaultOpen").click();
-            // TODO: Make this more robust, by not having to hard code this Node ID.
-            openZoom('10001');
         </script>
 
         <script type="text/javascript">
@@ -387,6 +398,7 @@
                 .each(function(d) {
                     // Append circle
                     d3.select(this).append("circle")
+                    .attr("id", d.id)
                     .attr("class", "node-circle")
                     .attr("r", nodeSize);
 
@@ -405,6 +417,10 @@
             var bbox = svg_container.getBBox();
             svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
             svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
+
+            document.cookie = "selectedNode=10001";
+            document.getElementById("10001").setAttribute("style", "fill: green;");
+            openZoom('10001');
         </script>
     </body>
 </html>

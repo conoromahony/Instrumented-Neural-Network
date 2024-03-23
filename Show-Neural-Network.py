@@ -146,7 +146,6 @@ def previous_iteration():
 
 
 # *** CURRENTLY: adding buttons to step through training
-# *** Add checks for iterating too far eithger way
 # *** Add button to go to start or end
 # *** Add button to play / pause through iterations
 # *** Maintain node close-up view when going to next or previous
