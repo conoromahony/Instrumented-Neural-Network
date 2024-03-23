@@ -418,9 +418,13 @@
             svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
             svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
 
-            document.cookie = "selectedNode=10001";
-            document.getElementById("10001").setAttribute("style", "fill: green;");
-            openZoom('10001');
+            // Check if the selectedNode cookie exists. If it does, open the "close up" area with the node indicated in 
+            // the cookie.
+            if (document.cookie.indexOf('selectedNode=') != -1) {
+                let oldSelectedCookie = document.cookie;
+                oldSelectedNode = oldSelectedCookie.split('=')[1];
+                openZoom(oldSelectedNode);
+            }
         </script>
     </body>
 </html>
