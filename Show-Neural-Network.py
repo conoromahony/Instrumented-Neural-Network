@@ -1,10 +1,5 @@
-# This code uses flask to create a web page that shows the operation of a neural network (that was created using 
-# Simple-Neural-Network.py). It displays the entire neural network, while allowing you to zoom in on certain 
-# neurons. It uses D3 to display the network graph.
-# 
-# Source 1: https://gist.github.com/e9t/6073cd95c2a515a9f0ba
-# Source 2: https://codepen.io/Neo24/pen/GRRdBWr
-# Looking at: https://d3-graph-gallery.com/graph/network_basic.html
+# This code uses flask to create a web page that shows the operation of a neural network. It displays the entire neural 
+# network, while allowing you to zoom in on certain neurons. It uses D3 to display the network graph.
 
 # To run:
 #  - Go to Desktop > Programming > Instrumented-Neural-Network
@@ -19,7 +14,6 @@
 #  - git push
 
 # TODO:
-#  - Combine this file with the file that creates and runs the neural network (i.e. Simple-Neural-Network.py).
 #  - Switch it so we write to a TempFiles directory, and then ovwerwrite the contents of the directory on the next run.
 #  - Is it possible to make this more efficient: read JSON --> create output_str --> create SVG
 
@@ -38,42 +32,31 @@ nodes_data = working_data["nodes"]
 connections_data = working_data["connections"]
 
 
-# Metadata:
-#  - Number of hidden layers
-#  - Number of nodes in each layer
-#  - Number of iterations
-#  - Iteration
-#  - Direction (i.e. forward or backward)
-#  - Activation function (i.e. descriptive text)
-#  - Alpha
-#  - Prediction
-#  - Label (i.e. the actual value)
-#  - Loss function (i.e. descriptive text)
-num_input_nodes = meta_data[0]["num_input_nodes"]
-num_hidden_layers = meta_data[0]["num_hidden_layers"]
-num_hidden_nodes = meta_data[0]["num_hidden_nodes"]
-num_output_nodes = meta_data[0]["num_output_nodes"]
-num_iterations = meta_data[0]["num_iterations"]
-iteration_number = meta_data[0]["iteration_number"]
-direction = meta_data[0]["direction"]
-activation_fn = meta_data[0]["activation_fn"]
-alpha_value = meta_data[0]["alpha_value"]
-prediction = meta_data[0]["prediction"]
-actual_value = meta_data[0]["actual_value"]
-loss_fn = meta_data[0]["loss_fn"]
+num_input_nodes = meta_data[0]["num_input_nodes"]           # Number of nodes in input layer
+num_hidden_layers = meta_data[0]["num_hidden_layers"]       # Number of hidden layers
+num_hidden_nodes = meta_data[0]["num_hidden_nodes"]         # Number of nodes in hidden layer
+num_output_nodes = meta_data[0]["num_output_nodes"]         # Number of nodes in output layer
+num_iterations = meta_data[0]["num_iterations"]             # Number of iterations (epochs)
+iteration_number = meta_data[0]["iteration_number"]         # Current iteration (epoch))
+direction = meta_data[0]["direction"]                       # Direction (i.e. forward or backward)
+activation_fn = meta_data[0]["activation_fn"]               # Activation function (i.e. descriptive text)
+alpha_value = meta_data[0]["alpha_value"]                   # Alpha
+prediction = meta_data[0]["prediction"]                     # Prediction
+actual_value = meta_data[0]["actual_value"]                 # Label (i.e. the actual value)
+loss_fn = meta_data[0]["loss_fn"]                           # Loss function (i.e. descriptive text)
 
 
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    # Metadata...
+    # This route generates the code for the home page.
+    # Generate the code that stores the metadata...
     output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
     for item in working_data["metadata"][0].keys():
         new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
         output_str += new_str
-
-    # Nodes:
+    # Generate the code that specifies the node data. For each node, it includes:
     #  - Node ID (which is used for creating the links)
     #  - Layer #
     #  - Node #
@@ -81,19 +64,18 @@ def hello():
     for node in nodes_data:
         new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
         output_str += new_str
-
-    # Connections:
+    # Generate the code that specifies the connections data. For each connection, it includes:
     #  - Source node #
     #  - Target node #
     #  - Weight (dW if backward step)
     for link in connections_data:
         new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
         output_str += new_str
-
     return render_template("index.html", network_graph=output_str)
 
 @app.route('/first')
 def first_iteration():
+    # This route generates the code when the "First Epoch" button is clicked.
     # TODO: Is it a problem that I am not closing the file, before opening another?
     # The following lines tells this module to use the global values of variables in this function.
     global file_name_number
@@ -117,6 +99,7 @@ def first_iteration():
 
 @app.route('/previous')
 def previous_iteration():
+    # This route generates the code when the "Previous Epoch" button is clicked.
     # TODO: Is it a problem that I am not closing the file, before opening another?
     # The following line tells this module to use the global value of file_name_number in this function.
     global file_name_number
@@ -142,6 +125,7 @@ def previous_iteration():
 
 @app.route('/next')
 def next_iteration():
+    # This route generates the code when the "First Epoch" button is clicked.
     # TODO: Is it a problem that I am not closing the file, before opening another?
     # The following lines tells this module to use the global values of variables in this function.
     global file_name_number
@@ -168,6 +152,7 @@ def next_iteration():
 
 @app.route('/last')
 def last_iteration():
+    # This route generates the code when the "Last Epoch" button is clicked.
     # TODO: Is it a problem that I am not closing the file, before opening another?
     # The following lines tells this module to use the global values of variables in this function.
     global file_name_number
@@ -194,3 +179,5 @@ def last_iteration():
 # ***  Training error rate
 # ***  Validation error rate
 # ***  Test error rate
+
+# *** Why are there only 9 nodes in the output layer, 63 nodes in the hidden layer?

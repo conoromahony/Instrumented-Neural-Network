@@ -4,32 +4,30 @@
     <head>
         <meta charset="utf-8">
         <title>Neural Network Explorer: {% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='Instrumented-Neural-Network.css') }}">
         <script src = "https://d3js.org/d3.v4.min.js"></script>
         <script type="text/javascript">
             // JavaScript function that opens a navigation tab.
             function openTab(evt, tabName) {
-                // Declare all variables
                 var i, tabcontent, tablinks;
-            
+
                 // Get all elements with class="tabcontent" and hide them
                 tabcontent = document.getElementsByClassName("tabcontent");
                 for (i = 0; i < tabcontent.length; i++) {
                     tabcontent[i].style.display = "none";
-                }
-            
+                }            
                 // Get all elements with class="tablinks" and remove the class "active"
+
                 tablinks = document.getElementsByClassName("tablinks");
                 for (i = 0; i < tablinks.length; i++) {
                     tablinks[i].className = tablinks[i].className.replace(" active", "");
-                }
-            
+                }            
+
                 // Show the current tab, and add an "active" class to the button that opened the tab
                 document.getElementById(tabName).style.display = "block";
                 evt.currentTarget.className += " active";
             }
-        </script>
 
-        <script type="text/javascript">
             // JavaScript function that displays the "close up" of a node in the network.
             // It takes one argument (nodeID), which is the ID of the node to zoom in on.
             function openZoom(nodeID) {
@@ -56,7 +54,6 @@
                     nodeText.innerHTML = text;
                     zoomContent.appendChild(nodeText);
                 };
-
                 // This helper function adds a line element to the SVG image.
                 const addLine = (x1, y1, x2, y2) => {
                     const nodeConnection = document.createElementNS('http://www.w3.org/2000/svg','line');
@@ -67,7 +64,6 @@
                     nodeConnection.setAttributeNS(null, "y2", y2);
                     zoomContent.appendChild(nodeConnection)                    
                 };
-
                 // This helper function adds a circle to the SVG image.
                 const addCircle = (r, cx, cy) => {
                     const nodeCircle = document.createElementNS('http://www.w3.org/2000/svg','circle');
@@ -84,7 +80,7 @@
 
                 // In the "Zoomed In" SVG image, include the headings.
                 addText(630, 30, 20, "bold", "sans-serif", "Close-up of Node");
-                addText(450, 60, 15, "normal", "Verdana, Geneva, Tahoma, sans-serif", "Displays information about the node highlighted (in green) to the left.");
+                addText(300, 60, 15, "normal", "Verdana, Geneva, Tahoma, sans-serif", "Displays information about the node highlighted (in green) to the left. W: indicates the weight of the connection.");
 
                 // Add a circle for the selected node to the zoomContent SVG image.
                 addCircle(200, 700, 850);
@@ -183,122 +179,6 @@
                 svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
             }
         </script>
-        <style>
-            html {
-                background: #f5f5f5;
-                width: 100%;
-                height: 100%;
-            }
-
-            /* Tabs - Style the tabs */
-            .tab {
-                overflow: hidden;
-                background-color: #f1f1f1;
-            }
-
-            /* Tabs - Style the buttons that are used to open the tab content */
-            .tab button {
-                background-color: inherit;
-                float: left;
-                border: none;
-                outline: none;
-                cursor: pointer;
-                padding: 14px 16px;
-                margin-right: 10px;
-                transition: 0.3s;
-                font-size: 18;
-                font-family: Verdana, Geneva, Tahoma, sans-serif;
-                border-top-left-radius: 15px;
-                border-top-right-radius: 15px; 
-                background-color: #ccc;
-            }
-
-            /* Tabs - Change background color of buttons on hover */
-            .tab button:hover {
-                font-weight: bold;
-            }
-
-            /* Tabs - Create an active/current tablink class */
-            .tab button.active {
-                font-weight: bold;
-                background-color: #31A66C;
-                color: #eee;
-            }
-
-            /* Tabs - Style the tab content */
-            .tabcontent {
-                display: none;
-                padding: 12px 24px 12px 12px;
-                border-top: none;
-                background-color: #31A66C;
-                color: #222;
-                width: fit-content;
-                border-top-right-radius: 15px; 
-            }
-
-            /* Training Tab - Whole Neural Network - Style for connections between nodes */
-            .link {
-                stroke: #999;
-                stroke-opacity: .6;
-            }
-
-            /* Training Tab - Style for the top area that displays the meta-data */
-            #neural_nav {
-                background-color: #e1e1e1;
-                border-radius: 15px;
-                padding: 12px 12px 12px 24px;
-                margin-bottom: 10px;
-                font-family: Verdana, Geneva, Tahoma, sans-serif;
-            }
-
-            /* Neural Network - Style for the bottom area that displays the "whole network" and the "close up" */
-            #neural_body {
-                display: inline-flex;
-            }
-
-            /* Neural Network - Style for the DIV containing the "whole network" */
-            #neural_whole {
-                background: #e1e1e1;
-                border-radius: 15px;
-                padding: 12px 12px;
-                margin-right: 10px;
-                position: relative;
-                height: 100%;
-                overflow: scroll;
-            } 
-
-            /* Neural Network - Style for the DIV containing the "close up" */
-            #neural_zoom {
-                flex-grow: 1; 
-                background: #BEE3D1;
-                padding: 12px 12px;
-                border-radius: 15px;
-                position: relative;
-                height: 100%;
-                overflow: scroll;
-            }
-
-            button {
-                border-radius: 3px;
-                color: #31A66C;
-                font-family: Verdana, Geneva, Tahoma, sans-serif;
-                font-weight: bold;
-                box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            }
-
-            /* The styling for the node circle */
-            .node-circle {
-                stroke: black;
-                fill: white;
-            }
-
-            /* The styling for the text in the node circle */
-            .node-text {
-                font-size: 12px;
-                fill: black;
-                pointer-events: none; /* Ensures that text elements do not intercept mouse events */
-            }
-        </style>
     </head>
         
     <body>
