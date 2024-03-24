@@ -42,13 +42,13 @@ num_input_nodes = 784
 num_hidden_layers = 1
 num_hidden_nodes = 64
 num_output_nodes = 10
-num_iterations = 100
+num_iterations = 30
 activation_fn = "Rectified Linear Unit (ReLU)"
-alpha_value = 0.1
+alpha_value = 0.2
 loss_fn = "Subtract a one hot encoding of the label from the probabilities"
 
-training_loss = []
-validation_loss = []
+training_accuracy = []
+validation_accuracy = []
 
 
 # We will place our files in the "Neural-Network-Parameters" directory. If the directory does not exist, create it.
@@ -185,7 +185,6 @@ def get_predictions(A2):
 
 # Get the accuracy between the predictions (i.e. A2) and Y (i.e. the labels).
 def get_accuracy(predictions, Y):
-    print(predictions, Y)
     return np.sum(predictions == Y) / Y.size
 
 
@@ -301,17 +300,21 @@ def gradient_descent(X, Y, alpha, iterations):
 
         Z1, A1, Z2, A2 = forward_prop(W1, b1, W2, b2, X)
         dW1, db1, dW2, db2 = backward_prop(Z1, A1, Z2, A2, W1, W2, X, Y)
+
+        # Store the Training Accuracy data for this epoch, so we can graph it later.
+        # A2 are the predictions that come out the other end of forward propagation.
+        # Y are the image labels.
         predictions = get_predictions(A2)
-        training_loss.append(get_accuracy(predictions, Y))
+        training_accuracy.append(get_accuracy(predictions, Y))
+        # Store the Validation Accuracy data for this epoch, so we can graph it later.
+        dev_predictions = make_predictions(X_dev, W1, b1, W2, b2)
+        validation_accuracy.append(get_accuracy(dev_predictions, Y_dev))
 
         # TODO: Add the back propagation data to the serialized working data.
 
         W1, b1, W2, b2 = update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, alpha)
         if i % 10 == 0:
             print("Iteration: ", i)
-            # A2 are the predictions that come out the other end of forward propagation.
-            predictions = get_predictions(A2)
-            # Y are the image labels.
             print("Accuracy: ", get_accuracy(predictions, Y))
     return W1, b1, W2, b2
 
@@ -374,21 +377,20 @@ W1, b1, W2, b2 = gradient_descent(X_train, Y_train, alpha_value, num_iterations)
 #test_prediction(2, W1, b1, W2, b2)
 #test_prediction(3, W1, b1, W2, b2)
 
-# Let's have a look at the accuracy for the validation set.
-dev_predictions = make_predictions(X_dev, W1, b1, W2, b2)
-validation_accuracy = get_accuracy(dev_predictions, Y_dev)
-print("Validation Accuracy: ", validation_accuracy)
-
 iteration_array = np.arange(0, num_iterations)
-training_array = np.array(training_loss)
-print(training_array)
-plt.plot(iteration_array, training_array)
-plt.title("Neural Network Training - Accuracy at each Epoch", fontweight='bold')
+training_array = np.array(training_accuracy)
+validation_array = np.array(validation_accuracy)
+plt.plot(iteration_array, training_array, color='r', label="Training Accuracy")
+plt.plot(iteration_array, validation_array, color='g', label="Validation Accuracy")
+plt.title("Training - Accuracy at each Epoch", fontweight='bold')
 plt.xlabel("Epoch Number")
 plt.ylabel("Accuracy")
+plt.legend(loc='best', frameon=False)
 formatter = matplotlib.ticker.PercentFormatter(xmax=1)
 plt.gca().yaxis.set_major_formatter(formatter)
-plt.savefig("static/Training-Accuracy.png")
+if os.path.isdir("static/Accuracy.png"):
+    os.remove("static/Accuracy.png")
+plt.savefig("static/Accuracy.png")
 
 # Need to write the JSON data.
 # Following instructions in: https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/

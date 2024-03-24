@@ -22,7 +22,7 @@ import numpy as np
 import json
 
 
-directory_name = "Neural-Network-Parameters-20240124-1941/"
+directory_name = "Neural-Network-Parameters/"
 file_name_base = "working-data-"
 file_name_number = "0"
 file_object = open(directory_name + file_name_base + file_name_number)
