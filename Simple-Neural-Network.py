@@ -34,6 +34,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 import matplotlib.ticker
+import seaborn as sn
+from PIL import Image
 import os, shutil
 import json
 
@@ -178,7 +180,8 @@ def update_params(W1, b1, W2, b2, dW1, db1, dW2, db2, alpha):
     return W1, b1, W2, b2
 
 
-# Return the first column of A2.
+# This function takes A2, which is the output of the neural network, and returns the index of the maximum value in column 0.
+# np.argmax returns the indices of the max element of the array in a particular axis.
 def get_predictions(A2):
     return np.argmax(A2, 0)
 
@@ -371,12 +374,46 @@ X_train = X_train / 255.
 # Run the neural network on the training set.
 W1, b1, W2, b2 = gradient_descent(X_train, Y_train, alpha_value, num_iterations)
 
-# Test the neural network's prediction for the images at indexes 0, 1, 2, and 3.
-#test_prediction(0, W1, b1, W2, b2)
-#test_prediction(1, W1, b1, W2, b2)
-#test_prediction(2, W1, b1, W2, b2)
-#test_prediction(3, W1, b1, W2, b2)
 
+# The following code generates the Confusion Matrix for the last Validation run. It shows the
+# accuracy between the predictions (i.e. A2) and Y (i.e. the labels).
+html_string = "<table><tr><th>Image</th> <th>Label</th> <th>Prediction</th></tr>"
+val_predictions = make_predictions(X_dev, W1, b1, W2, b2)
+confusion_matrix = np.zeros((10, 10))
+image_matrix = X_dev.T
+image_matrix = image_matrix * 255
+count = 0
+for predicted_value in val_predictions:
+    actual_value = Y_dev[count]
+    confusion_matrix[(actual_value, predicted_value)] += 1
+    if actual_value != predicted_value:
+        image_vector = image_matrix[count]
+        image_array = image_vector.reshape((28,28))
+        #inv_image_array = np.linalg.inv(image_array)
+        svg_string = """<svg width="28" height="28">"""
+        for i in range(image_array.shape[0]):
+            for j in range(image_array.shape[1]):
+                if image_array[i, j] > 0:
+                    svg_string += """<rect x="{0}" y="{1}" width="1" height="1" fill="black"/>""".format(i, j)
+        svg_string += """</svg>"""
+        html_string += "<tr><td>" + svg_string + "</td><td>" + str(actual_value) + "</td><td>" + str(predicted_value) + "</td></tr>"
+    count += 1
+sn.heatmap(data=confusion_matrix, annot=True, fmt="g", cmap="tab20", center=0)
+plt.title("Validation - Confusion Matrix", fontweight='bold')
+plt.xlabel("Prediction")
+plt.ylabel("Actual Value")
+if os.path.isdir("static/Confusion.png"):
+    os.remove("static/Confusion.png")
+plt.savefig("static/Confusion.png")
+plt.close()
+if os.path.exists("static/BadPredictions.html"):
+    os.remove("static/BadPredictions.html")
+file = open("static/BadPredictions.html", "w")
+file.write(html_string)
+file.close()
+
+
+# The following code generates the graph showing the Training Accuracy and the Validation accuracy.
 iteration_array = np.arange(0, num_iterations)
 training_array = np.array(training_accuracy)
 validation_array = np.array(validation_accuracy)
@@ -391,6 +428,15 @@ plt.gca().yaxis.set_major_formatter(formatter)
 if os.path.isdir("static/Accuracy.png"):
     os.remove("static/Accuracy.png")
 plt.savefig("static/Accuracy.png")
+plt.close()
+
+
+# Test the neural network's prediction for the images at indexes 0, 1, 2, and 3.
+#test_prediction(0, W1, b1, W2, b2)
+#test_prediction(1, W1, b1, W2, b2)
+#test_prediction(2, W1, b1, W2, b2)
+#test_prediction(3, W1, b1, W2, b2)
+
 
 # Need to write the JSON data.
 # Following instructions in: https://www.geeksforgeeks.org/reading-and-writing-json-to-a-file-in-python/

@@ -57,15 +57,6 @@ html {
     stroke-opacity: .6;
 }
 
-/* Style for the top area in a tab, which displays the meta-data and/or the buttons for navigating through the epochs */
-#neural_nav {
-    background-color: #e1e1e1;
-    border-radius: 15px;
-    padding: 12px 12px 12px 24px;
-    margin-bottom: 10px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
 /* Style for the buttons that navigate through the epochs */
 button {
     border-radius: 3px;
@@ -75,13 +66,22 @@ button {
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Style for the top area in a tab, which displays the meta-data and/or the buttons for navigating through the epochs */
+.neural_nav {
+    background-color: #e1e1e1;
+    border-radius: 15px;
+    padding: 12px 12px 12px 24px;
+    margin-bottom: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 /* Style for the DIV that contains both the "whole network" and "close up" SVGs */
-#neural_body {
+.neural_body {
     display: inline-flex;
 }
 
 /* Style for the DIV containing the "whole network" */
-#neural_whole {
+.neural_whole {
     background: #e1e1e1;
     border-radius: 15px;
     padding: 12px 12px;
@@ -92,7 +92,7 @@ button {
 } 
 
 /* Style for the DIV containing the "close up" */
-#neural_zoom {
+.neural_zoom {
     flex-grow: 1; 
     background: #BEE3D1;
     padding: 12px 12px;
@@ -100,6 +100,21 @@ button {
     position: relative;
     height: 100%;
     overflow: scroll;
+}
+
+.other_body {
+    display: block;
+}
+
+.graph-container {
+    background: #fff;
+    padding: 24px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.graph-container img {
+    margin: auto;
 }
 
 /* Style for the node circle */

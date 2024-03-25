@@ -6,6 +6,12 @@
         <title>Neural Network Explorer: {% block title %}{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='Instrumented-Neural-Network.css') }}">
         <script src = "https://d3js.org/d3.v4.min.js"></script>
+        <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> 
+        <script type="text/javascript"> 
+            $(function(){
+                $("#badPredictions").load("static/BadPredictions.html"); 
+            });
+        </script> 
         <script type="text/javascript">
             // JavaScript function that opens a navigation tab.
             function openTab(evt, tabName) {
@@ -196,7 +202,7 @@
 
         <!-- Tab content -->
         <div id="Training" class="tabcontent">
-            <div id="neural_nav">
+            <div class="neural_nav">
                 <!--
                 <p>
                     <b>Direction:</b> <span id="direction"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -214,31 +220,44 @@
                     <a href="/last"><button>Last ⏭️</button></a>
                 </p>
             </div>
-            <div id="neural_body">
-                <div id="neural_whole">
+            <div class="neural_body">
+                <div class="neural_whole">
                     <svg id="network_image"></svg>
                 </div>
-                <div id="neural_zoom">
-                    <svg id="zoom_image">Close Up</svg>
+                <div class="neural_zoom">
+                    <svg id="zoom_image"></svg>
                 </div>
             </div>    
         </div>
         
         <div id="Validation" class="tabcontent">
-            <div id="neural_nav">
-                <p>Use the buttons below to step through the training epochs. As you step through the epochs, the network's weights and biases will update.</p>
+            <div class="neural_nav">
+                <p>This graph shows the Confusion Matrix for the last Validation run. The X axis shows the value that the neural network predicted.
+                    <br />The Y axis shows the label from the training data (that is, what the actual value should be). You can see, for each 
+                    <br />prediction, what the value should have been. For the most part, the neural network does a good job of predicting the number.
+                    <br />However, there are quite a few instances when it though a 4 was a 9, and vice versa.
+                </p>
             </div>
-            <div id="neural_body">
-
+            <div class="other_body">
+                <div class="graph-container">
+                    <img src="{{ url_for('static', filename='Confusion.png') }}">
+                </div>
+                <div id="badPredictions"></div>
             </div>
         </div>
 
         <div id="AccuracyLoss" class="tabcontent">
-            <div id="neural_nav">
-                <p>This graph shows the accuracy of the neural network at the end of each epoch.</p>
+            <div class="neural_nav">
+                <p>This graph shows the Training Accuracy and the Validation Accuracy at the end of each epoch. The Training Accuracy should be similar 
+                    <br />to the Validation Accuracy. If the Training Accuracy is significantly bigger than the Validation Accuracy, it is a sign that
+                    <br />the neural network is overfitting to the Training Data. If the Training Accuracy is significantly lower than the Validation 
+                    <br />Accuracy, it is a sign that the neural network is underfitting to the Training Data.
+                </p>
             </div>
-            <div id="neural_body">
-                <img src="{{ url_for('static', filename='Accuracy.png') }}">
+            <div class="other_body">
+                <div class="graph-container">
+                    <img src="{{ url_for('static', filename='Accuracy.png') }}">
+                </div>
             </div>
         </div>
 
