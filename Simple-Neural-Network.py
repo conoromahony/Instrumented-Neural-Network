@@ -375,37 +375,56 @@ X_train = X_train / 255.
 W1, b1, W2, b2 = gradient_descent(X_train, Y_train, alpha_value, num_iterations)
 
 
-# The following code generates the Confusion Matrix for the last Validation run. It shows the
-# accuracy between the predictions (i.e. A2) and Y (i.e. the labels).
-html_string = "<table><tr><th>Image</th> <th>Label</th> <th>Prediction</th></tr>"
+# This code generates the Confusion Matrix for the last Validation run. It shows the accuracy between the 
+# predictions (i.e. A2) and Y (i.e. the labels). It also generates the HTML table that shows all the predictions 
+# that were wrong in the last Validation run.
+html_string = "<table><tbody>"
 val_predictions = make_predictions(X_dev, W1, b1, W2, b2)
 confusion_matrix = np.zeros((10, 10))
+
+# Transpose the Validation run image matrix, so the images are in the rows. 
 image_matrix = X_dev.T
+# Multiply the image matrix values by 255, to get them back to the orignial greyscale values.
 image_matrix = image_matrix * 255
+# A counter that keeps track of the current image as we go through the Validation run.
 count = 0
+# Go through the predicted values, one-by-one.
 for predicted_value in val_predictions:
+    # Get the label for the corresponding image.
     actual_value = Y_dev[count]
+    # Increment the appropriate cell in the Confusion Matrix.
     confusion_matrix[(actual_value, predicted_value)] += 1
+    # If the prediction does not match the label, then generate a table entry for it.
     if actual_value != predicted_value:
+        # Get the values for the pixels in the corresponding image.
         image_vector = image_matrix[count]
-        image_array = image_vector.reshape((28,28))
-        #inv_image_array = np.linalg.inv(image_array)
-        svg_string = """<svg width="28" height="28">"""
+        # Reshape the pixel values into a 28x28 array.
+        image_array = image_vector.reshape((28,28)).T
+        # Start the HTML code to create an SVG image for the current image.
+        svg_string = """<svg width="28" height="28" style="background-color:white">"""
+        # Iterate through the pixels in the 28x28 array, adding a 1-pixel rectangle to the SVG image when the pixel has a value.
         for i in range(image_array.shape[0]):
             for j in range(image_array.shape[1]):
                 if image_array[i, j] > 0:
-                    svg_string += """<rect x="{0}" y="{1}" width="1" height="1" fill="black"/>""".format(i, j)
+                    # Convert the greyscale value (0-255) into a hex value (#aabbcc).
+                    hex_color = hex(int(255 - image_array[i, j]))[2:].zfill(2)
+                    hex_color_string = "#" + hex_color * 3
+                    svg_string += """<rect x="{0}" y="{1}" width="1" height="1" fill="{2}"/>""".format(i, j, hex_color_string)
         svg_string += """</svg>"""
         html_string += "<tr><td>" + svg_string + "</td><td>" + str(actual_value) + "</td><td>" + str(predicted_value) + "</td></tr>"
     count += 1
+# Put the closing tags in the HTML string.
+html_string += "</tbody></table>"
+# Generate the Confusion Matrix.
 sn.heatmap(data=confusion_matrix, annot=True, fmt="g", cmap="tab20", center=0)
-plt.title("Validation - Confusion Matrix", fontweight='bold')
 plt.xlabel("Prediction")
 plt.ylabel("Actual Value")
+# If the file for the Confusion Matrix exists, remove it, before creating it again with the new Confusion Matrix plot.
 if os.path.isdir("static/Confusion.png"):
     os.remove("static/Confusion.png")
 plt.savefig("static/Confusion.png")
 plt.close()
+# If the file for the incorrect predictions HTML exists, remove it, before creating it again with the newly generated HTML string.
 if os.path.exists("static/BadPredictions.html"):
     os.remove("static/BadPredictions.html")
 file = open("static/BadPredictions.html", "w")

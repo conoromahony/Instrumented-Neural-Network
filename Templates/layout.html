@@ -39,7 +39,7 @@
             function openZoom(nodeID) {
                 // Declare all variables. Note that I'm using "const" for variables that don't need reassignment.
                 const nodesData = newGraph.nodes.find(currentNode => currentNode.id === parseInt(nodeID));
-                const zoomContent = document.getElementById("zoom_image");
+                const zoomContent = document.getElementById("zoom-image");
 
                 // Clear highlighting for old selected node, store newly selected node in the cookie, and
                 // highlight the newly selected node.
@@ -178,8 +178,8 @@
 
                 // In the "Zoomed In" SVG image, set the height and width of the SVG to those of the bounding  
                 // box (so we cansee all nodes).
-                svg_container = document.getElementById("zoom_image");
-                div_container = document.getElementById("neural_zoom");
+                svg_container = document.getElementById("zoom-image");
+                div_container = document.getElementById("neural-zoom");
                 bbox = svg_container.getBBox();
                 svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
                 svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
@@ -202,7 +202,7 @@
 
         <!-- Tab content -->
         <div id="Training" class="tabcontent">
-            <div class="neural_nav">
+            <div class="neural-nav">
                 <!--
                 <p>
                     <b>Direction:</b> <span id="direction"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -220,41 +220,61 @@
                     <a href="/last"><button>Last ⏭️</button></a>
                 </p>
             </div>
-            <div class="neural_body">
-                <div class="neural_whole">
-                    <svg id="network_image"></svg>
+            <div class="neural-body">
+                <div class="neural-whole">
+                    <svg id="network-image"></svg>
                 </div>
-                <div class="neural_zoom">
-                    <svg id="zoom_image"></svg>
+                <div class="neural-zoom">
+                    <svg id="zoom-image"></svg>
                 </div>
             </div>    
         </div>
         
         <div id="Validation" class="tabcontent">
-            <div class="neural_nav">
+            <div class="neural-nav">
                 <p>This graph shows the Confusion Matrix for the last Validation run. The X axis shows the value that the neural network predicted.
                     <br />The Y axis shows the label from the training data (that is, what the actual value should be). You can see, for each 
-                    <br />prediction, what the value should have been. For the most part, the neural network does a good job of predicting the number.
-                    <br />However, there are quite a few instances when it though a 4 was a 9, and vice versa.
+                    <br />prediction, what the label is. For the most part, the neural network does a good job of predicting the number.
+                    <br />However, there are some instances when it though a 4 was a 9, and vice versa. Below the Confusion Matrix, there is a 
+                    <br />table showing all of the incorrect predictions for the Validation run.
                 </p>
             </div>
-            <div class="other_body">
+            <div class="other-body">
                 <div class="graph-container">
+                    <p class="other-heading">Validation - Confusion Matrix</p>
                     <img src="{{ url_for('static', filename='Confusion.png') }}">
                 </div>
-                <div id="badPredictions"></div>
+                <div class="table-container">
+                    <p class="other-heading">Validation - Incorrect Predictions</p>
+                    <!-- The following is a hack to put headers at the top of each column. When a table flows across multiple columns, the table
+                    headers do not get repeated at the top of each column. To get past this, I am creating a table that only has the table headings
+                    and putting that table immediately before the table with the content. This table has four sets ofheadings, one for each column.-->
+                    <div class="col-body">
+                        <div>
+                            <table>
+                                <thead><tr><th>Image</th> <th>Label</th> <th>Prediction</th></tr></thead>
+                                <thead><tr><th>Image</th> <th>Label</th> <th>Prediction</th></tr></thead>
+                                <thead><tr><th>Image</th> <th>Label</th> <th>Prediction</th></tr></thead>
+                                <thead><tr><th>Image</th> <th>Label</th> <th>Prediction</th></tr></thead>
+                                </table>
+                        </div>
+                    </div>
+                    <div class="col-body">
+                        <div id="badPredictions"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="AccuracyLoss" class="tabcontent">
-            <div class="neural_nav">
+            <div class="neural-nav">
                 <p>This graph shows the Training Accuracy and the Validation Accuracy at the end of each epoch. The Training Accuracy should be similar 
                     <br />to the Validation Accuracy. If the Training Accuracy is significantly bigger than the Validation Accuracy, it is a sign that
                     <br />the neural network is overfitting to the Training Data. If the Training Accuracy is significantly lower than the Validation 
                     <br />Accuracy, it is a sign that the neural network is underfitting to the Training Data.
                 </p>
             </div>
-            <div class="other_body">
+            <div class="other-body">
                 <div class="graph-container">
                     <img src="{{ url_for('static', filename='Accuracy.png') }}">
                 </div>
@@ -272,7 +292,7 @@
 
         <script type="text/javascript">
             var nodeSize = 15;
-            var svg = d3.select("#network_image");
+            var svg = d3.select("#network-image");
 
             document.getElementById('iteration_num').innerHTML = parseInt(iteration_number) + 1;
             document.getElementById('num_iterations').innerHTML = num_iterations;
@@ -281,7 +301,7 @@
             //document.getElementById('activation_fn').innerHTML = activation_fn;
             //document.getElementById('loss_fn').innerHTML = loss_fn;
 
-            const entireContent = document.getElementById("network_image");
+            const entireContent = document.getElementById("network-image");
 
             // This function creates a text element (that contains the node information) in the circle.
             // We call this function below.
@@ -350,8 +370,8 @@
 
 		    // In the "Entire Neural Network" SVG image, set the height and width of the SVG to those of the bounding box 
             // (so we can see all nodes).
-            var svg_container = document.getElementById("network_image");
-            var div_container = document.getElementById("neural_whole");
+            var svg_container = document.getElementById("network-image");
+            var div_container = document.getElementById("neural-whole");
             var bbox = svg_container.getBBox();
             svg_container.setAttribute("width", bbox.x + bbox.width + bbox.x);
             svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
