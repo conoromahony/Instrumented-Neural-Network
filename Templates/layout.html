@@ -3,16 +3,17 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Neural Network Explorer: {% block title %}{% endblock %}</title>
+        <title>Neural Network Explorer</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='Instrumented-Neural-Network.css') }}">
         <script src = "https://d3js.org/d3.v4.min.js"></script>
         <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> 
         <script type="text/javascript"> 
+            // JavaScript function to read the HTML code for the "bad predictions" and put it in the
+            // appropriate DIV.
             $(function(){
                 $("#badPredictions").load("static/BadPredictions.html"); 
             });
-        </script> 
-        <script type="text/javascript">
+
             // JavaScript function that opens a navigation tab.
             function openTab(evt, tabName) {
                 var i, tabcontent, tablinks;
@@ -21,13 +22,13 @@
                 tabcontent = document.getElementsByClassName("tabcontent");
                 for (i = 0; i < tabcontent.length; i++) {
                     tabcontent[i].style.display = "none";
-                }            
-                // Get all elements with class="tablinks" and remove the class "active"
+                }      
 
+                // Get all elements with class="tablinks" and remove the class "active"
                 tablinks = document.getElementsByClassName("tablinks");
                 for (i = 0; i < tablinks.length; i++) {
                     tablinks[i].className = tablinks[i].className.replace(" active", "");
-                }            
+                }       
 
                 // Show the current tab, and add an "active" class to the button that opened the tab
                 document.getElementById(tabName).style.display = "block";
@@ -203,14 +204,6 @@
         <!-- Tab content -->
         <div id="Training" class="tabcontent">
             <div class="neural-nav">
-                <!--
-                <p>
-                    <b>Direction:</b> <span id="direction"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <b>Alpha:</b> <span id="alpha_value"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <b>Activation:</b> <span id="activation_fn"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <b>Loss:</b> <span id="loss_fn"></span>
-                </p>
-                -->
                 <p>Use the buttons below to step through the training epochs. As you step through the epochs, the network's weights and biases will update.</p>
                 <p>
                     <a href="/first"><button>⏮️ First</button></a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -268,21 +261,42 @@
 
         <div id="AccuracyLoss" class="tabcontent">
             <div class="neural-nav">
-                <p>This graph shows the Training Accuracy and the Validation Accuracy at the end of each epoch. The Training Accuracy should be similar 
-                    <br />to the Validation Accuracy. If the Training Accuracy is significantly bigger than the Validation Accuracy, it is a sign that
-                    <br />the neural network is overfitting to the Training Data. If the Training Accuracy is significantly lower than the Validation 
-                    <br />Accuracy, it is a sign that the neural network is underfitting to the Training Data.
+                <p>These graphs shows the Accuracy and Loss for the Training and Validation phases. The Training and Validation lines should be close 
+                    <br />to one another. If they are not, it could be a sign of the neural network underftting or overfitting the training data.</p>
+                <p>The Accuracy represents the percentage of images that the neural network correctly predicts. The loss represents the sum of the 
+                    <br />"error" between the prediction and the label.</p>
                 </p>
             </div>
             <div class="other-body">
                 <div class="graph-container">
                     <img src="{{ url_for('static', filename='Accuracy.png') }}">
                 </div>
+                <div class="graph-container">
+                    <img src="{{ url_for('static', filename='Loss.png') }}">
+                </div>
             </div>
         </div>
 
         <div id="About" class="tabcontent">
-            <h3>About</h3>
+            <div class="neural-nav">
+                <p>This application allows you to explore a neural network [that was created by a different program]. It takes JSON data
+                    <br />that is stored in files created by that other program, and allows you to explore several aspects of the neural  
+                    <br />network. You can explore the nodes of the neural network, seeing the weights and biases. You can see the 
+                    <br />Confusion Matrix, showing how the neural network performed on the Validation data. You can also see all the 
+                    <br />instances where the Validation run got its prediction wrong. Finally, you can see the Accuracy and Loss graphs
+                    <br />for the Training and Validation runs. Here is some information about the neural network in question:
+                </p>
+                <table>
+                    <tr><td>Data:</td><td>MNIST Written Digits</td></tr>
+                    <tr><td>Layers:</td><td>3</td></tr>
+                    <tr><td>Input Nodes:</td><td>784</td></tr>
+                    <tr><td>Hidden Nodes:</td><td>180</td></tr>
+                    <tr><td>Output Nodes:</td><td>10</td></tr>
+                    <tr><td>Activation Function:</td><td><span id="activation_fn"></span></td></tr>
+                    <tr><td>Loss Function:</td><td><span id="loss_fn"></span></td></tr>
+                    <tr><td>Learning Rate:</td><td><span id="alpha_value"></span></td></tr>
+                </table>
+            </div>
         </div>
 
         <script type="text/javascript">
@@ -297,9 +311,9 @@
             document.getElementById('iteration_num').innerHTML = parseInt(iteration_number) + 1;
             document.getElementById('num_iterations').innerHTML = num_iterations;
             //document.getElementById('direction').innerHTML = direction;
-            //document.getElementById('alpha_value').innerHTML = alpha_value;
-            //document.getElementById('activation_fn').innerHTML = activation_fn;
-            //document.getElementById('loss_fn').innerHTML = loss_fn;
+            document.getElementById('alpha_value').innerHTML = alpha_value;
+            document.getElementById('activation_fn').innerHTML = activation_fn;
+            document.getElementById('loss_fn').innerHTML = loss_fn;
 
             const entireContent = document.getElementById("network-image");
 

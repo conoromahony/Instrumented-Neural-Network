@@ -17,167 +17,84 @@
 #  - Switch it so we write to a TempFiles directory, and then ovwerwrite the contents of the directory on the next run.
 #  - Is it possible to make this more efficient: read JSON --> create output_str --> create SVG
 
-from flask import Flask, render_template, flash
-import numpy as np
+from flask import Flask, render_template, abort
 import json
 
 
-directory_name = "Neural-Network-Parameters/"
-file_name_base = "working-data-"
-file_name_number = "0"
-file_object = open(directory_name + file_name_base + file_name_number)
-working_data = json.load(file_object)
-meta_data = working_data["metadata"]
-nodes_data = working_data["nodes"]
-connections_data = working_data["connections"]
+def load_working_data(file_name):
+    """
+    Returns the JSON data from the specified file.
+    """
+    try:
+        with open(file_name) as file_object:
+            return json.load(file_object)
+    except FileNotFoundError:
+        abort(404)
 
 
-num_input_nodes = meta_data[0]["num_input_nodes"]           # Number of nodes in input layer
-num_hidden_layers = meta_data[0]["num_hidden_layers"]       # Number of hidden layers
-num_hidden_nodes = meta_data[0]["num_hidden_nodes"]         # Number of nodes in hidden layer
-num_output_nodes = meta_data[0]["num_output_nodes"]         # Number of nodes in output layer
-num_iterations = meta_data[0]["num_iterations"]             # Number of iterations (epochs)
-iteration_number = meta_data[0]["iteration_number"]         # Current iteration (epoch))
-direction = meta_data[0]["direction"]                       # Direction (i.e. forward or backward)
-activation_fn = meta_data[0]["activation_fn"]               # Activation function (i.e. descriptive text)
-alpha_value = meta_data[0]["alpha_value"]                   # Alpha
-prediction = meta_data[0]["prediction"]                     # Prediction
-actual_value = meta_data[0]["actual_value"]                 # Label (i.e. the actual value)
-loss_fn = meta_data[0]["loss_fn"]                           # Loss function (i.e. descriptive text)
+def generate_output_str(working_data):
+    """
+    Takes the JSON data and returns HTML code that represents the data.
+    """
+    meta_data = working_data["metadata"]
+    nodes_data = working_data["nodes"]
+    connections_data = working_data["connections"]
+    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
+    for item in working_data["metadata"][0].keys():
+        new_str = f"var {item} = '{meta_data[0][item]}'; \n"
+        output_str += new_str
+    for node in nodes_data:
+        new_str = f"var tempNode = {node}; newGraph.nodes.push(tempNode); \n"
+        output_str += new_str
+    for link in connections_data:
+        new_str = f"var tempLink = {link}; newGraph.connections.push(tempLink); \n"
+        output_str += new_str
+    return output_str
 
 
 app = Flask(__name__)
+directory_name = "Neural-Network-Parameters/"
+file_name_base = "working-data-"
+file_name_number = "0"
+working_data = load_working_data(directory_name + file_name_base + "0")
+meta_data = working_data["metadata"]
+num_iterations = meta_data[0]["num_iterations"]              # Number of iterations (epochs)
+iteration_number = meta_data[0]["iteration_number"]          # Current iteration (epoch))
+
 
 @app.route("/")
-def hello():
-    # This route generates the code for the home page.
-    # Generate the code that stores the metadata...
-    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
-    for item in working_data["metadata"][0].keys():
-        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
-        output_str += new_str
-    # Generate the code that specifies the node data. For each node, it includes:
-    #  - Node ID (which is used for creating the links)
-    #  - Layer #
-    #  - Node #
-    #  - Bias (db if backward step)
-    for node in nodes_data:
-        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
-        output_str += new_str
-    # Generate the code that specifies the connections data. For each connection, it includes:
-    #  - Source node #
-    #  - Target node #
-    #  - Weight (dW if backward step)
-    for link in connections_data:
-        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
-        output_str += new_str
+def index():
+    output_str = generate_output_str(working_data)
+    return render_template("index.html", network_graph=output_str)
+
+@app.route('/iteration/<int:iteration_number>')
+def iteration(iteration_number):
+    global file_name_number
+    global num_iterations
+    global working_data
+    if iteration_number < 0:
+        file_name_number = 0
+    elif iteration_number >= num_iterations:
+        file_name_number = num_iterations - 1
+    else:
+        file_name_number = iteration_number
+    file_name = directory_name + file_name_base + str(file_name_number)
+    working_data = load_working_data(file_name)
+    output_str = generate_output_str(working_data)
     return render_template("index.html", network_graph=output_str)
 
 @app.route('/first')
 def first_iteration():
-    # This route generates the code when the "First Epoch" button is clicked.
-    # TODO: Is it a problem that I am not closing the file, before opening another?
-    # The following lines tells this module to use the global values of variables in this function.
-    global file_name_number
-    global num_iterations
-    file_name_number = "0"
-    file_object = open(directory_name + file_name_base + file_name_number)
-    working_data = json.load(file_object)
-    nodes_data = working_data["nodes"]
-    connections_data = working_data["connections"]
-    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
-    for item in working_data["metadata"][0].keys():
-        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
-        output_str += new_str
-    for node in nodes_data:
-        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
-        output_str += new_str
-    for link in connections_data:
-        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
-        output_str += new_str
-    return render_template("index.html", network_graph=output_str)
+    return iteration(0)
 
 @app.route('/previous')
 def previous_iteration():
-    # This route generates the code when the "Previous Epoch" button is clicked.
-    # TODO: Is it a problem that I am not closing the file, before opening another?
-    # The following line tells this module to use the global value of file_name_number in this function.
-    global file_name_number
-    if int(file_name_number) > 0:
-        file_name_number = str(int(file_name_number) - 1)
-    else:
-        file_name_number = "0"
-    file_object = open(directory_name + file_name_base + file_name_number)
-    working_data = json.load(file_object)
-    nodes_data = working_data["nodes"]
-    connections_data = working_data["connections"]
-    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
-    for item in working_data["metadata"][0].keys():
-        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
-        output_str += new_str
-    for node in nodes_data:
-        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
-        output_str += new_str
-    for link in connections_data:
-        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
-        output_str += new_str
-    return render_template("index.html", network_graph=output_str)
+    return iteration(int(file_name_number) - 1)
 
 @app.route('/next')
 def next_iteration():
-    # This route generates the code when the "First Epoch" button is clicked.
-    # TODO: Is it a problem that I am not closing the file, before opening another?
-    # The following lines tells this module to use the global values of variables in this function.
-    global file_name_number
-    global num_iterations
-    if int(file_name_number) < int(num_iterations) - 1:
-        file_name_number = str(int(file_name_number) + 1)
-    else:
-        file_name_number = str(int(num_iterations) - 1)
-    file_object = open(directory_name + file_name_base + file_name_number)
-    working_data = json.load(file_object)
-    nodes_data = working_data["nodes"]
-    connections_data = working_data["connections"]
-    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
-    for item in working_data["metadata"][0].keys():
-        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
-        output_str += new_str
-    for node in nodes_data:
-        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
-        output_str += new_str
-    for link in connections_data:
-        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
-        output_str += new_str
-    return render_template("index.html", network_graph=output_str)
+    return iteration(int(file_name_number) + 1)
 
 @app.route('/last')
 def last_iteration():
-    # This route generates the code when the "Last Epoch" button is clicked.
-    # TODO: Is it a problem that I am not closing the file, before opening another?
-    # The following lines tells this module to use the global values of variables in this function.
-    global file_name_number
-    global num_iterations
-    file_name_number = str(num_iterations - 1)
-    file_object = open(directory_name + file_name_base + file_name_number)
-    working_data = json.load(file_object)
-    nodes_data = working_data["nodes"]
-    connections_data = working_data["connections"]
-    output_str = "var newGraph = { 'metadata': [], 'nodes': [], 'connections':[] }; \n"
-    for item in working_data["metadata"][0].keys():
-        new_str = "var " + str(item) + " = '" + str(working_data["metadata"][0][item]) + "'; \n"
-        output_str += new_str
-    for node in nodes_data:
-        new_str = "var tempNode = { 'id': " + str(node["id"]) + ", 'layer': " + str(node["layer"]) + ", 'node': " + str(node["node"]) + ", 'bias': " + str(node["bias"]) + "}; newGraph.nodes.push(tempNode); \n"
-        output_str += new_str
-    for link in connections_data:
-        new_str = "var tempLink = { 'source': " + str(link["source"]) + ", 'target': " + str(link["target"]) + ", 'weight': " + str(link["weight"]) + "}; newGraph.connections.push(tempLink); \n"
-        output_str += new_str
-    return render_template("index.html", network_graph=output_str)
-
-
-# *** Maybe generate mathplotlib images upon training runs, store them in the folder, and display them in the UI?
-# ***  Training error rate
-# ***  Validation error rate
-# ***  Test error rate
-
-# *** Why are there only 9 nodes in the output layer, 63 nodes in the hidden layer?
+    return iteration(num_iterations - 1)
