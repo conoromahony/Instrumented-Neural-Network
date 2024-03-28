@@ -5,11 +5,12 @@
 
 # Overview
 This project cotains two programs:
- 1. **Simple-Neural-Network.py**, which implements a neural network. The neural network "learns" how to recognize handwritten digits. It uses the MNIST (Modified National Institute of Standards and Technology) dataset. This program stores the neural network parameters in files in the **Neural-Network-Parameters** directory, using the JSON format. Finally, it also creates images for the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix.
+ 1. **Simple-Neural-Network.py**, which implements a neural network. The neural network "learns" how to recognize handwritten digits. It uses the MNIST (Modified National Institute of Standards and Technology) dataset. This program stores the neural network parameters in files in the **Neural-Network-Parameters** directory, using the JSON format. It also creates images for the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix.
  2. **Show-Neural-Network.py**, which allows you to explore the neural network created by the other program. It allows you to explore the neural network's connection weights and node biases. It lets you see the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix. Finally, it shows each instance where the Vaidation run got it's prediction wrong. 
 
 # Neural Network
 The neural network has the following characteristics:
+
 | Layers: | 3 (Input Layer, Hidden Layer, and Output Layer) |
 | Number of Input Nodes: | 784 |
 | Number of Hidden Nodes: | 180 |
@@ -19,15 +20,15 @@ The neural network has the following characteristics:
 | Learning Rate: | 0.15 |
 
 # Technologies
-The technologies used to create this website are:
+The technologies in this project are:
   - Python for server-side processing.
+  - JSON to store the neural network's metadata, nodes, and connections information.
   - Flask to create the **Show-Neural-Network.py** web pages.
   - HTML and JavaScript to implement the web pages.
-  - JQuery to dynamically load HTML (for the incorect predictions).
   - D3 to create the graphs showing the neural network's nodes and connections.
+  - JQuery to dynamically load HTML (for the incorect predictions).
   - CSS to style the web pages.
-  - JSON to store the neural network's metadata, nodes, and connections information.
-  - GitHub for version control
+  - GitHub for version control.
 
 # Running these Programs
 To run the **Simple-Neural-Network.py** program, use the python command:
@@ -35,12 +36,12 @@ To run the **Simple-Neural-Network.py** program, use the python command:
 python Simple-Neural-Network.py
 ```
 
-Before running the **Show-Neural-Network.py** program, you must ensure the 'FLASK_APP'' environment variable is set (or the Terminal window):
+Before running the **Show-Neural-Network.py** program, you must ensure the ''FLASK_APP'' environment variable is set (in the Terminal window):
 ```
 export FLASK_APP=Show-Neural-Network.py
 ```
 
-To run the **Show-Neural-Network.py** program, use the flask command and then load ''http://127.0.0.1:5000/'' in a browser:
+To run the **Show-Neural-Network.py** program, use the flask command and then load http://127.0.0.1:5000/ in a browser:
 ```
 flask run
 ```
@@ -51,8 +52,8 @@ flask run
 # Files and Directories
 This project has the following files and directories:
 
-| File or Directory | Description |
-|-------------------|-------------|
+| File or Directory in the Project| Description |
+|---------------------------------|-------------|
 | train.csv | This CSV file contains the MNIST data set. That is, it includes the images of digits and the labels that correspond to those images. |
 | Simple-Neural-Network.py | This Python file implements and runs a neural network. For more deails about the neual network configuration, see the [Neural Network](#Neural-Network) section above. |
 | Neural-Network-Parameters | This directory contains te JSON files that store the neural network's metadata, nodes, and connections information. | 
