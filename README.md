@@ -11,12 +11,14 @@ This project cotains two programs:
 # Neural Network
 The neural network has the following characteristics:
 
+| Characteristic | Details |
+|----------------|---------|
 | Layers: | 3 (Input Layer, Hidden Layer, and Output Layer) |
 | Number of Input Nodes: | 784 |
 | Number of Hidden Nodes: | 180 |
 | Number of Output Nodes: | 10 |
 | Activation Function: | Rectified Linear U nit (ReLU) |
-| Loss Function: | Subtract a one hot encoding of the label from the probabilities |
+| Loss Function: | Subtract one hot encoding of label from probabilities |
 | Learning Rate: | 0.15 |
 
 # Technologies
@@ -52,8 +54,8 @@ flask run
 # Files and Directories
 This project has the following files and directories:
 
-| File or Directory in the Project| Description |
-|---------------------------------|-------------|
+| File or Directory | Description |
+|-------------------|-------------|
 | train.csv | This CSV file contains the MNIST data set. That is, it includes the images of digits and the labels that correspond to those images. |
 | Simple-Neural-Network.py | This Python file implements and runs a neural network. For more deails about the neual network configuration, see the [Neural Network](#Neural-Network) section above. |
 | Neural-Network-Parameters | This directory contains te JSON files that store the neural network's metadata, nodes, and connections information. | 
