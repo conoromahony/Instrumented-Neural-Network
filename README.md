@@ -32,7 +32,7 @@ The technologies in this project are:
   - CSS to style the web pages.
   - GitHub for version control.
 
-# Running these Programs
+# Running the Programs
 To run the **Simple-Neural-Network.py** program, use the python command:
 ```
 python Simple-Neural-Network.py
@@ -48,8 +48,17 @@ To run the **Show-Neural-Network.py** program, use the flask command and then lo
 flask run
 ```
 
-# Using these Programs
+# Using the Programs
+There is no user interface for **Simple-Neural-Network.py**. You can use the console to verify that the program runs correctly.
 
+When you run **Show-Neural-Network.py** and load http://127.0.0.1:5000/ in a browser, you will see a web page with for tabs:
+![Screenshot.png](Screenshot.png?raw=true)
+
+Use these tabs to navigate between:
+ - **Training Explorer**: Exploring the neural network's weights and biases.
+ - **Validation Explorer**: Seeing the Confusion Matrix for the Validation run, as well as inforation aout each instance where the Validation run had an incorrect prediction.
+ - **Accuracy & Loss:**: Seeing the Accuract graph for the Training and Validation runs, as well as the Loss graph for the Training and Validation runs.
+ - **About the Neural Network**: Seeing information about the neural network hyperparameters.
 
 # Files and Directories
 This project has the following files and directories:
@@ -59,20 +68,16 @@ This project has the following files and directories:
 | train.csv | This CSV file contains the MNIST data set. That is, it includes the images of digits and the labels that correspond to those images. |
 | Simple-Neural-Network.py | This Python file implements and runs a neural network. For more deails about the neual network configuration, see the [Neural Network](#Neural-Network) section above. |
 | Neural-Network-Parameters | This directory contains te JSON files that store the neural network's metadata, nodes, and connections information. | 
-
-Show-Neural-Network.py
-
-static/Accuracy.png
-static/Cofusion.png
-static/Loss.png
-static/BadPredictions.html
-static/Instrumented-Neural-Networks.css
-
-Templates/index.html
-Templates/layout.hml
-
-tests/test_Show-Neural-Network.py
-tests/test_Simple-Neural-Network.py
+| Show-Neural-Network.py | |
+| static/Accuracy.png | |
+| static/Cofusion.png | |
+| static/Loss.png | |
+| static/BadPredictions.html | |
+| static/Instrumented-Neural-Networks.css | |
+| Templates/index.html | |
+| Templates/layout.hml | |
+| tests/test_Show-Neural-Network.py | |
+| tests/test_Simple-Neural-Network.py | |
 
 
 
