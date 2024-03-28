@@ -61,8 +61,11 @@ Use these tabs to navigate between:
  - **About the Neural Network**: Seeing information about the neural network hyperparameters.
  
  Here are some screenshots:
+
  ![Training-Explorer.png](Training-Explorer.png?raw=true)
+
  ![Validation-Explorer](Validation-Explorer.png?raw=true)
+ 
  ![Accuracy-and-Loss.png](Accuracy-and-Loss.png?raw=true)
 
 # Files and Directories
