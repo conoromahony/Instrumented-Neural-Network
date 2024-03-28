@@ -1,12 +1,12 @@
 # NEURAL NETWORK EXPLORER
 #### Video Demo:  <URL HERE>
 #### Description:
-
+Implement a neural network, and then explore several aspects of the network's operation.
 
 # Overview
 This project cotains two programs:
  1. **Simple-Neural-Network.py**, which implements a neural network. The neural network "learns" how to recognize handwritten digits. It uses the MNIST (Modified National Institute of Standards and Technology) dataset. This program stores the neural network parameters in files in the **Neural-Network-Parameters** directory, using the JSON format. It also creates images for the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix.
- 2. **Show-Neural-Network.py**, which allows you to explore the neural network created by the other program. It allows you to explore the neural network's connection weights and node biases. It lets you see the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix. Finally, it shows each instance where the Vaidation run got it's prediction wrong. 
+ 2. **Show-Neural-Network.py**, which allows you to explore the neural network created by the other program. It allows you to explore the neural network's connection weights and node biases. It lets you see the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix. Finally, it shows each instance where the Validation run got it's prediction wrong. 
 
 # Neural Network
 The neural network has the following characteristics:
@@ -59,6 +59,11 @@ Use these tabs to navigate between:
  - **Validation Explorer**: Seeing the Confusion Matrix for the Validation run, as well as inforation aout each instance where the Validation run had an incorrect prediction.
  - **Accuracy & Loss:**: Seeing the Accuract graph for the Training and Validation runs, as well as the Loss graph for the Training and Validation runs.
  - **About the Neural Network**: Seeing information about the neural network hyperparameters.
+ 
+ Here are some screenshots:
+ ![Training-Explorer.png](Training-Explorer.png?raw=true)
+ ![Validation-Explorer](Validation-Explorer?raw=true)
+ ![Accuracy-and-Loss.png](Accuracy-and-Loss.png?raw=true)
 
 # Files and Directories
 This project has the following files and directories:
@@ -66,18 +71,18 @@ This project has the following files and directories:
 | File or Directory | Description |
 |-------------------|-------------|
 | train.csv | This CSV file contains the MNIST data set. That is, it includes the images of digits and the labels that correspond to those images. |
-| Simple-Neural-Network.py | This Python file implements and runs a neural network. For more deails about the neual network configuration, see the [Neural Network](#Neural-Network) section above. |
+| Simple-Neural-Network.py | This Python file implements and runs the neural network. For more deails about the neural network configuration, see the [Neural Network](#Neural-Network) section above. |
 | Neural-Network-Parameters | This directory contains te JSON files that store the neural network's metadata, nodes, and connections information. | 
-| Show-Neural-Network.py | |
-| static/Accuracy.png | |
-| static/Cofusion.png | |
-| static/Loss.png | |
-| static/BadPredictions.html | |
-| static/Instrumented-Neural-Networks.css | |
-| Templates/index.html | |
-| Templates/layout.hml | |
-| tests/test_Show-Neural-Network.py | |
-| tests/test_Simple-Neural-Network.py | |
+| Show-Neural-Network.py | This Python file creates the neural network explorer that allows you to see the connection weights, node biasesa, accuracy graphs, loss graphs, etc.|
+| static/Accuracy.png | This image shows the accuracy graph for the Training and Validation runs. It is created by Simple-Neural-Network.py. |
+| static/Cofusion.png | This image shows the neural network's Confusion Matrix. It is created by Simple-Neural-Network.py. |
+| static/Loss.png | This image shows the loss graph for the Training and Validation runs. It is created by Simple-Neural-Network.py. |
+| static/BadPredictions.html | This file includes HTML with details about the incorrect predicions from the Validation run. It is dynamically loaded into Simple-Neural-Network.py. |
+| static/Instrumented-Neural-Networks.css | This is the CSS file for Simple-Neural-Network.py. |
+| Templates/index.html | This is the Flask template for the Simple-Neural-Network.py home page. |
+| Templates/layout.hml | This is the Flask template that lays out the Simple-Neural-Network.py home page. |
+| tests/test_Show-Neural-Network.py | This is the unit test for Show-Neural-Network.py. |
+| tests/test_Simple-Neural-Network.py | This is the unit test for Simple-Neural-Network. |
 
 
 
