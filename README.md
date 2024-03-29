@@ -76,6 +76,7 @@ This project has the following files and directories:
 | train.csv | This CSV file contains the MNIST data set. That is, it includes the images of digits and the labels that correspond to those images. |
 | project.py | This Python file implements and runs the neural network. For more deails about the neural network configuration, see the [Neural Network](#Neural-Network) section above. |
 | Neural-Network-Parameters | This directory contains te JSON files that store the neural network's metadata, nodes, and connections information. | 
+| requirements.txt | The pip-installable libraries this project requires. |
 | Show-Neural-Network.py | This Python file creates the neural network explorer that allows you to see the connection weights, node biasesa, accuracy graphs, loss graphs, etc.|
 | static/Accuracy.png | This image shows the accuracy graph for the Training and Validation runs. It is created by project.py. |
 | static/Cofusion.png | This image shows the neural network's Confusion Matrix. It is created by project.py. |

@@ -1,7 +1,5 @@
 import unittest
 import numpy as np
-import sys
-import os
 from project import load_data, init_params, forward_prop, backward_prop, update_params, get_accuracy
 
 
