@@ -85,7 +85,6 @@ This project has the following files and directories:
 | static/Instrumented-Neural-Networks.css | This is the CSS file for project.py. |
 | Templates/index.html | This is the Flask template for the Show-Neural-Network.py home page. |
 | Templates/layout.hml | This is the Flask template that lays out the Show-Neural-Network.py home page. |
-| test_Show-Neural-Network.py | This is the unit test for Show-Neural-Network.py. |
 | test_project.py | This is the unit test for Project.py. |
 
 

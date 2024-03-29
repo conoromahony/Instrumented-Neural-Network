@@ -7,8 +7,7 @@ class TestNeuralNetwork(unittest.TestCase):
     
     def test_load_data(self):
         # Test loading data from a CSV file
-        file_path = 'test_data.csv'
-        # Assuming 'test_data.csv' contains sample data in the correct format
+        file_path = 'train.csv'
         data = load_data(file_path)
         self.assertIsNotNone(data)
         # Add more specific tests for the loaded data if needed
@@ -49,7 +48,6 @@ class TestNeuralNetwork(unittest.TestCase):
         self.assertIsNotNone(updated_b1)
         self.assertIsNotNone(updated_W2)
         self.assertIsNotNone(updated_b2)
-        # Add more specific tests for updating parameters if needed
     
     def test_get_accuracy(self):
         # Test calculating accuracy
@@ -57,7 +55,6 @@ class TestNeuralNetwork(unittest.TestCase):
         labels = np.array([0, 1, 2, 3, 9])  # Sample labels
         accuracy = get_accuracy(predictions, labels)
         self.assertAlmostEqual(accuracy, 0.8, delta=0.01)  # Assuming expected accuracy is 80%
-        # Add more specific tests for calculating accuracy if needed
 
 if __name__ == '__main__':
     unittest.main()
