@@ -5,7 +5,7 @@ Implement a neural network, and then explore several aspects of the network's op
 
 # Overview
 This project cotains two programs:
- 1. **Project.py**, which implements a neural network. The neural network "learns" how to recognize handwritten digits. It uses the MNIST (Modified National Institute of Standards and Technology) dataset. This program stores the neural network parameters in files in the **Neural-Network-Parameters** directory, using the JSON format. It also creates images for the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix.
+ 1. **project.py**, which implements a neural network. The neural network "learns" how to recognize handwritten digits. It uses the MNIST (Modified National Institute of Standards and Technology) dataset. This program stores the neural network parameters in files in the **Neural-Network-Parameters** directory, using the JSON format. It also creates images for the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix.
  2. **Show-Neural-Network.py**, which allows you to explore the neural network created by the other program. It allows you to explore the neural network's connection weights and node biases. It lets you see the Training Accuracy graph, Training Loss graph, Validation Accuracy graph, Validation Loss graph, and the Confusion Matrix. Finally, it shows each instance where the Validation run got it's prediction wrong. 
 
 # Neural Network
@@ -33,7 +33,7 @@ The technologies in this project are:
   - GitHub for version control.
 
 # Running the Programs
-To run the **Project.py** program, use the python command:
+To run the **project.py** program, use the python command:
 ```
 python Project.py
 ```
@@ -49,7 +49,7 @@ flask run
 ```
 
 # Using the Programs
-There is no user interface for **Project.py**. You can use the console to verify that the program runs correctly.
+There is no user interface for **project.py**. You can use the console to verify that the program runs correctly.
 
 When you run **Show-Neural-Network.py** and load http://127.0.0.1:5000/ in a browser, you will see a web page with for tabs:
 ![Screenshot.png](Screenshot.png?raw=true)
@@ -74,14 +74,14 @@ This project has the following files and directories:
 | File or Directory | Description |
 |-------------------|-------------|
 | train.csv | This CSV file contains the MNIST data set. That is, it includes the images of digits and the labels that correspond to those images. |
-| Project.py | This Python file implements and runs the neural network. For more deails about the neural network configuration, see the [Neural Network](#Neural-Network) section above. |
+| project.py | This Python file implements and runs the neural network. For more deails about the neural network configuration, see the [Neural Network](#Neural-Network) section above. |
 | Neural-Network-Parameters | This directory contains te JSON files that store the neural network's metadata, nodes, and connections information. | 
 | Show-Neural-Network.py | This Python file creates the neural network explorer that allows you to see the connection weights, node biasesa, accuracy graphs, loss graphs, etc.|
-| static/Accuracy.png | This image shows the accuracy graph for the Training and Validation runs. It is created by Project.py. |
-| static/Cofusion.png | This image shows the neural network's Confusion Matrix. It is created by Project.py. |
-| static/Loss.png | This image shows the loss graph for the Training and Validation runs. It is created by Project.py. |
-| static/BadPredictions.html | This file includes HTML with details about the incorrect predicions from the Validation run. It is dynamically loaded into Project.py. |
-| static/Instrumented-Neural-Networks.css | This is the CSS file for Project.py. |
+| static/Accuracy.png | This image shows the accuracy graph for the Training and Validation runs. It is created by project.py. |
+| static/Cofusion.png | This image shows the neural network's Confusion Matrix. It is created by project.py. |
+| static/Loss.png | This image shows the loss graph for the Training and Validation runs. It is created by project.py. |
+| static/BadPredictions.html | This file includes HTML with details about the incorrect predicions from the Validation run. It is dynamically loaded into project.py. |
+| static/Instrumented-Neural-Networks.css | This is the CSS file for project.py. |
 | Templates/index.html | This is the Flask template for the Show-Neural-Network.py home page. |
 | Templates/layout.hml | This is the Flask template that lays out the Show-Neural-Network.py home page. |
 | test_Show-Neural-Network.py | This is the unit test for Show-Neural-Network.py. |
