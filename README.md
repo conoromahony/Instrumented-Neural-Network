@@ -1,5 +1,5 @@
 # NEURAL NETWORK EXPLORER
-#### Video Demo:  <URL HERE>
+#### Video Demo:  [https://youtu.be/XOiG4eFewcU](https://youtu.be/XOiG4eFewcU)
 #### Description:
 Implement a neural network, and then explore several aspects of the network's operation.
 
