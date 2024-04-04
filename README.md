@@ -1,4 +1,4 @@
-This was my second attempt at writing python code to create a simple neural network. I used this as my project for an online CS50 course. To see my subsequent efforts to build on this code, check out the [Integrated Instrumented Neural Network repository]([https://github.com/conoromahony/Instrumented-Neural-Network](https://github.com/conoromahony/Integrated-Instrumented-Neural-Network).
+This was my second attempt at writing python code to create a simple neural network. I used this as my project for an online CS50 course. To see my subsequent efforts to build on this code, check out the [Integrated Instrumented Neural Network repository](https://github.com/conoromahony/Integrated-Instrumented-Neural-Network).
 
 # NEURAL NETWORK EXPLORER
 #### Video Demo:  [https://youtu.be/XOiG4eFewcU](https://youtu.be/XOiG4eFewcU)
