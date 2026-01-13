@@ -1,6 +1,6 @@
 This was my second attempt at writing python code to create a simple neural network, building on the code in [Simple Neural Network](https://github.com/conoromahony/Simple-Neural-Network). I used this as my project for an online CS50 course. To see my subsequent efforts to build on this code, check out [Integrated Instrumented Neural Network](https://github.com/conoromahony/Integrated-Instrumented-Neural-Network).
 
-Note: This was working great when I first created it, but when I went to run it in January of 2026, it was broken. I spent a few hours fixing it, and now it works great again (for now :-))
+Note: This was working great when I first created it. But when I went to run it in January of 2026, it was broken. I spent a few hours fixing it, and now it works great again (for now :-))
 
 # NEURAL NETWORK EXPLORER
 #### Video Demo:  [https://youtu.be/XOiG4eFewcU](https://youtu.be/XOiG4eFewcU)
