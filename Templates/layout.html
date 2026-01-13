@@ -44,10 +44,11 @@
 
                 // Clear highlighting for old selected node, store newly selected node in the cookie, and
                 // highlight the newly selected node.
+                console.log('document.cookie:', document.cookie);
                 let oldSelectedCookie = document.cookie;
                 oldSelectedNode = oldSelectedCookie.split('=')[1];
                 document.getElementById(oldSelectedNode.toString()).setAttribute("style", "fill: white;");
-                document.cookie = "selectedNode=" + nodeID.toString();
+                document.cookie = `selectedNode=${nodeID}; path=/`;
                 document.getElementById(nodeID.toString()).setAttribute("style", "fill: #BEE3D1;");
 
                 // This helper function adds a text element to the SVG image.
@@ -186,6 +187,13 @@
                 svg_container.setAttribute("height", bbox.y + bbox.height + bbox.y);
             }
         </script>
+        <script>
+            // Check if the cookie is set
+            if (!document.cookie.split('; ').find(row => row.startsWith('selectedNode='))) {
+              // Set the cookie if not present
+              document.cookie = "selectedNode=10001; path=/; max-age=31536000"; // 1 year
+            }
+          </script>
     </head>
         
     <body>
@@ -365,6 +373,7 @@
                     return "translate(" + ((d.layer * 200) + 100) + "," + ((d.node * 35) + 110) + ")";
                 })
                 .on("click", function(d) {
+                    console.log('Node clicked:', d.id);
                     openZoom(d.id);
                 })
                 .each(function(d) {

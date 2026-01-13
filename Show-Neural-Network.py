@@ -21,8 +21,12 @@ def load_working_data(file_name):
     Returns the JSON data from the specified file.
     """
     try:
-        with open(file_name) as file_object:
-            return json.load(file_object)
+        with open(file_name) as f:
+            text = f.read()
+            # First parse: get the JSON string
+            json_str = json.loads(text)
+            # Second parse: get the dictionary
+            return json.loads(json_str)
     except FileNotFoundError:
         abort(404)
 
